@@ -1,0 +1,15 @@
+/home/lostya/projects/school/c#/uno-flip/Uno Flip!/bin/Debug/net8.0/Uno Flip!
+/home/lostya/projects/school/c#/uno-flip/Uno Flip!/bin/Debug/net8.0/Uno Flip!.deps.json
+/home/lostya/projects/school/c#/uno-flip/Uno Flip!/bin/Debug/net8.0/Uno Flip!.runtimeconfig.json
+/home/lostya/projects/school/c#/uno-flip/Uno Flip!/bin/Debug/net8.0/Uno Flip!.dll
+/home/lostya/projects/school/c#/uno-flip/Uno Flip!/bin/Debug/net8.0/Uno Flip!.pdb
+/home/lostya/projects/school/c#/uno-flip/Uno Flip!/obj/Debug/net8.0/Uno Flip!.GeneratedMSBuildEditorConfig.editorconfig
+/home/lostya/projects/school/c#/uno-flip/Uno Flip!/obj/Debug/net8.0/Uno Flip!.AssemblyInfoInputs.cache
+/home/lostya/projects/school/c#/uno-flip/Uno Flip!/obj/Debug/net8.0/Uno Flip!.AssemblyInfo.cs
+/home/lostya/projects/school/c#/uno-flip/Uno Flip!/obj/Debug/net8.0/Uno Flip!.csproj.CoreCompileInputs.cache
+/home/lostya/projects/school/c#/uno-flip/Uno Flip!/obj/Debug/net8.0/Uno Flip!.sourcelink.json
+/home/lostya/projects/school/c#/uno-flip/Uno Flip!/obj/Debug/net8.0/Uno Flip!.dll
+/home/lostya/projects/school/c#/uno-flip/Uno Flip!/obj/Debug/net8.0/refint/Uno Flip!.dll
+/home/lostya/projects/school/c#/uno-flip/Uno Flip!/obj/Debug/net8.0/Uno Flip!.pdb
+/home/lostya/projects/school/c#/uno-flip/Uno Flip!/obj/Debug/net8.0/Uno Flip!.genruntimeconfig.cache
+/home/lostya/projects/school/c#/uno-flip/Uno Flip!/obj/Debug/net8.0/ref/Uno Flip!.dll
