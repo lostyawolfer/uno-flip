@@ -1,4 +1,6 @@
 ﻿using System.Collections;
+using System.Diagnostics;
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
 
 namespace uno_flip
 {   
@@ -133,20 +135,21 @@ namespace uno_flip
     {
         static void Main()
         {   
+            while(true) {
+                Main2();
+
+                GlobalVars.main_side = true;
+            }
+        }
+
+
+
+        public static void Main2() {
             Random random = new Random();
 
-            List<int> deck_new = new List<int>();
-                for (int i = 0; i < 112; i++){ deck_new.Add(i); }
-
-            int card;
             List<int> deck = new List<int>();
-                for (int i = 0; i < 112; i++){
-                    card = random.Next(0, deck_new.Count);
-                    deck.Add(deck_new[card]);
-                    deck_new.RemoveAt(card);
-                }
-            
-            for (int i = 0; i < 112; i++){ deck_new.Add(i); }
+            ShuffleDeck(ref deck);
+
             
 
             List<int> user_cards = new List<int>();
@@ -165,37 +168,78 @@ namespace uno_flip
                 TakeCardFromDeck(ref deck, ref stack);
             }
             
-
+            // ConsoleKeyInfo keyInfo = new();
+            bool last_move = false;
+            string bot_played = "";
+            string info = "Play a card!";
             while (true){
                 Console.Clear();
-                SortDeck(ref opponent_cards);
+
+                //SortDeck(ref opponent_cards);
                 SortDeck(ref user_cards);
                 ShowCardSituation(ref opponent_cards, ref deck, ref stack, ref user_cards);
-                Console.WriteLine("\n\nBackspace or Space to take a card; Enter to change side; q to quit");
-                ConsoleKeyInfo keyInfo = Console.ReadKey(true);
-
-                if (keyInfo.Key == ConsoleKey.Backspace || keyInfo.Key == ConsoleKey.Spacebar){
-                    if (deck.Count > 0){
-                        TakeCardFromDeck(ref deck, ref user_cards);
-                    }
-                } else if (keyInfo.Key == ConsoleKey.Enter){
-                    GlobalVars.main_side = !GlobalVars.main_side;
-                } else if (keyInfo.Key == ConsoleKey.Q){
-                    Environment.Exit(0);
-                    //System.Diagnostics.Process.GetCurrentProcess().Kill();
+                Console.WriteLine("\n\nwrite a card code (written in its bottom left) to play it\nif it's a wild add a color code at the end to set that color\n\t(r red, y yellow, g green, b blue; c cyan, p purple, m magenta, o orange)\n\"#\" to draw a card\nadd \"!\" at the end to call UNO!\n");
+                
+                if (last_move) {
+                    input_output.InputOutput.WriteWithColor($"{info}\n", ConsoleColor.Green);
+                    input_output.InputOutput.WriteWithColor($"Bot played {bot_played}\t", ConsoleColor.Yellow);
+                    input_output.InputOutput.WriteWithColor($"Next move > ", ConsoleColor.Gray);
+                } else {
+                    if (bot_played != "") input_output.InputOutput.WriteWithColor($"Bot played {bot_played}\n", ConsoleColor.Yellow);
+                    else Console.WriteLine();
+                    input_output.InputOutput.WriteWithColor($"{info}", ConsoleColor.Red);
+                    input_output.InputOutput.WriteWithColor($" > ", ConsoleColor.Gray);
                 }
+                //Console.WriteLine($"{keyInfo.Key} pressed; it's {keyInfo.KeyChar} char");
+
+                // keyInfo = Console.ReadKey(true);
+
+                // if (keyInfo.Key == ConsoleKey.D1){
+                //     TakeCardFromDeck(ref deck, ref user_cards);
+                // } else if (keyInfo.Key == ConsoleKey.D2){
+                //     TakeCardFromDeck(ref deck, ref opponent_cards);
+                // } else if (keyInfo.Key == ConsoleKey.D0){
+                //     if (GlobalVars.main_side){
+                //         TakeCardFromDeck(ref deck, ref stack);
+                //     } else {
+                //         TakeCardFromDeck(ref deck, ref stack, false);
+                //     }
+                // } else if (keyInfo.Key == ConsoleKey.Spacebar){
+                //     GlobalVars.main_side = !GlobalVars.main_side;
+                // } else if (keyInfo.Key == ConsoleKey.Q){
+                //     Environment.Exit(0);
+                //     //System.Diagnostics.Process.GetCurrentProcess().Kill();
+                // } else if (keyInfo.Key == ConsoleKey.R){
+                //     return;
+                //     //System.Diagnostics.Process.GetCurrentProcess().Kill();
+                // }
+                string input = Console.ReadLine();
+                #pragma warning disable CS8604 // Possible null reference argument.
+                last_move = ValidateMove(input, ref user_cards, ref stack, ref deck, out info);
+                if (last_move) bot_played = BotMove(ref opponent_cards, ref stack, ref deck);
             }
         }
 
-
-        public static void TakeCardFromDeck(ref List<int> deck, ref List<int> stack){
-            stack.Add(deck[0]);
+        public static void TakeCardFromDeck(ref List<int> deck, ref List<int> stack, bool to_end = true){
+            if (deck.Count == 0) return;
+            if (to_end) stack.Add(deck[0]);
+            else stack.Insert(0, deck[0]);
             deck.RemoveAt(0);
         }
 
-        public static void ShuffleDeck(){
+        public static void ShuffleDeck(ref List<int> deck){
+            int card;
+            Random random = new Random();
 
-        }//todo
+            List<int> deck_new = new List<int>();
+            for (int i = 0; i < 112; i++) deck_new.Add(i);
+
+            for (int i = 0; i < 112; i++){
+                card = random.Next(0, deck_new.Count);
+                deck.Add(deck_new[card]);
+                deck_new.RemoveAt(card);
+            }
+        }
 
         public static void SortDeck(ref List<int> deck){
             if (GlobalVars.main_side) {
@@ -207,14 +251,73 @@ namespace uno_flip
 
         public static void ShowCardSituation(ref List<int> opponent_cards, ref List<int> deck, ref List<int> stack, ref List<int> user_cards){
             InputOutput.PrintCards(InputOutput.GetCards(opponent_cards), main_side: !GlobalVars.main_side, show_other_side: false, compact: false, small: true);
+            input_output.InputOutput.WriteWithColor($"cards: {opponent_cards.Count}\n", ConsoleColor.DarkGray);
             Console.WriteLine();
             Console.WriteLine();
-            if (deck.Count > 1) InputOutput.PrintCards(InputOutput.GetCards(deck[0]), main_side: !GlobalVars.main_side, show_other_side: false, compact: true, small: false, spacing: "     ");
+            if (Console.WindowHeight > 30) Console.WriteLine();
+            if (Console.WindowHeight > 40) Console.WriteLine();
+            if (Console.WindowHeight > 50) Console.WriteLine();
+            if (deck.Count > 0) InputOutput.PrintCards(InputOutput.GetCards(deck[0]), main_side: !GlobalVars.main_side, show_other_side: false, compact: true, small: false, spacing: "     ");
             else input_output.InputOutput.WriteWithColor("     ╭─────╮\n     │EMPTY│\n     ╰─────╯\n", ConsoleColor.DarkGray);
-            InputOutput.PrintCards(InputOutput.GetCards(stack.Last()), main_side: GlobalVars.main_side, show_other_side: false, compact: false, small: false, spacing: "     ");
+            if (GlobalVars.main_side) InputOutput.PrintCards(InputOutput.GetCards(stack.Last()), main_side: GlobalVars.main_side, show_other_side: false, compact: false, small: false, spacing: "     ");
+            else InputOutput.PrintCards(InputOutput.GetCards(stack[0]), main_side: GlobalVars.main_side, show_other_side: false, compact: false, small: false, spacing: "     ");
+            if (Console.WindowHeight > 50) Console.WriteLine();
+            if (Console.WindowHeight > 40) Console.WriteLine();
+            if (Console.WindowHeight > 30) Console.WriteLine();
             Console.WriteLine();
             Console.WriteLine();
-            InputOutput.PrintCards(InputOutput.GetCards(user_cards), show_other_side: true);
+            input_output.InputOutput.WriteWithColor($"cards: {user_cards.Count}   ", ConsoleColor.White);
+            input_output.InputOutput.WriteWithColor("current side: ", ConsoleColor.White);
+            if (GlobalVars.main_side) input_output.InputOutput.WriteWithColor("↑ light\n", ConsoleColor.Yellow);
+            else input_output.InputOutput.WriteWithColor("↯ dark\n", ConsoleColor.Cyan);
+            InputOutput.PrintCards(InputOutput.GetCards(user_cards), show_other_side: true, show_codes: true);
+        }
+
+
+        public static bool ValidateMove(string input, ref List<int> cards, ref List<int> stack, ref List<int> deck, out string info){
+            info = "";
+            input = input.Trim().ToLower();
+            string no_uno_input = input.EndsWith('!') ? input[..^1] : input;
+
+            if (input.StartsWith('#')) {
+                TakeCardFromDeck(ref deck, ref cards);
+                info = $"You drew 1 card: {GlobalVars.cards[cards.Last()].main_code}";
+                return true;
+            }
+
+        
+            foreach (int card in cards) {
+                if ((no_uno_input == $"{GlobalVars.cards[card].main_code}" && GlobalVars.main_side) || (no_uno_input == $"{GlobalVars.cards[card].reverse_code}" && !GlobalVars.main_side)) {
+                    if (GlobalVars.main_side) stack.Add(card);
+                    else stack.Insert(0, card);
+                    cards.Remove(card);
+                    info = $"You played {input}";
+                    if (cards.Count == 1) {
+                        if (!input.EndsWith('!')){
+                            TakeCardFromDeck(ref deck, ref cards);
+                            TakeCardFromDeck(ref deck, ref cards);
+                            info = $"You played {input};\t1 card, no \"uno\" => +2";
+                        } else {
+                            info = $"You played {input};\tUNO!";
+                        }
+                    } else {
+                        if (input.EndsWith('!')){
+                            TakeCardFromDeck(ref deck, ref cards);
+                            TakeCardFromDeck(ref deck, ref cards);
+                            info = $"You played {input};\tUNO!, >1 card => +2";
+                        }
+                    } 
+                    return true;
+                }
+            }
+
+            info = "Invalid move. Try again";
+            return false;
+        }
+
+        public static string BotMove(ref List<int> cards, ref List<int> stack, ref List<int> deck) {
+            TakeCardFromDeck(ref deck, ref cards);
+            return "#";
         }
     }
 }
