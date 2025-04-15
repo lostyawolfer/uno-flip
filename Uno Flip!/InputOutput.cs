@@ -191,7 +191,7 @@ namespace uno_flip{
     }
 
     public static class InputOutput{
-        public static void ParseCard(out ConsoleColor true_color, out string true_value, out string type, Card card, bool main_side = true){
+        public static void ParseCard(out ConsoleColor true_color, out string true_value, out string type, Card card, bool main_side = true, char back = ' '){
             /*
             this function is supposed to take your card, parse it and output results for easier card rendering.
             inputs:
@@ -208,7 +208,7 @@ namespace uno_flip{
 
 
             true_color = ConsoleColor.White;
-            true_value = "  ";
+            true_value = $"{back}{back}";
             int color = main_side ? card.main_color : card.reverse_color;
             int value = main_side ? card.main_value : card.reverse_value;
 
@@ -220,16 +220,16 @@ namespace uno_flip{
 
 
             if (color != 0){
-                if (value > 0) true_value = $" {value}";
-                else if (value == -1) true_value = " ⇵";    // reverse
-                else if (value == -2) true_value = main_side ? " Ø" : " ↻";    // block
+                if (value > 0) true_value = $"{back}{value}";
+                else if (value == -1) true_value = $"{back}⇵";    // reverse
+                else if (value == -2) true_value = main_side ? $"{back}Ø" : $"{back}↻";    // block
                 else if (value == -3) {
                     if (main_side) true_value = "+1";
                     else true_value = "+5";
                 } 
-                else if (value == -4) true_value = " ↯";    // flip
+                else if (value == -4) true_value = $"{back}↯";    // flip
             } else {
-                if (value == 0) true_value = $" W";
+                if (value == 0) true_value = $"{back}W";
                 else {
                     if (main_side) true_value = "W2";
                     else true_value = "W*";
@@ -280,12 +280,16 @@ namespace uno_flip{
             string value;
             string type;
 
-            int _MAX_CARD_WIDTH = 10;
+            int _MAX_CARD_WIDTH = Console.WindowWidth / 7;
             int _MAX_CARDS_UNTIL_COMPACT = _MAX_CARD_WIDTH;
-            int _MAX_CARDS_UNTIL_SMALL = 8;
+            int _MAX_CARDS_UNTIL_SMALL = _MAX_CARD_WIDTH / 2;
+            int _MAX_CARDS_UNTIL_NO_SIDE = _MAX_CARD_WIDTH*2;
 
             if (cards.Length > _MAX_CARDS_UNTIL_COMPACT) compact = true;
             if (cards.Length > _MAX_CARDS_UNTIL_SMALL) small = true;
+            if (cards.Length > _MAX_CARDS_UNTIL_NO_SIDE) show_other_side = false;
+
+            if (Console.WindowHeight < 30) compact = true;
 
             main_side ??= GlobalVars.main_side;
             bool real_main_side = main_side.GetValueOrDefault();
@@ -390,13 +394,8 @@ namespace uno_flip{
                     if (show_other_side){
                         foreach (Card card in cards_part){
                             if (card.main_color == -1) break;
-                            ParseCard(out color, out value, out type, card, !real_main_side);
-                            input_output.InputOutput.WriteWithColor($"{spacing}╭───╮  ", color);
-                        } Console.WriteLine();
-                        foreach (Card card in cards_part){
-                            if (card.main_color == -1) break;
-                            ParseCard(out color, out value, out type, card, !real_main_side);
-                            input_output.InputOutput.WriteWithColor($"{spacing}│{type}{value}│  ", color);
+                            ParseCard(out color, out value, out type, card, !real_main_side, back: '─');
+                            input_output.InputOutput.WriteWithColor($"{spacing}╭{type}{value}╮  ", color);
                         } Console.WriteLine();
                     }
 
@@ -444,7 +443,6 @@ namespace uno_flip{
                         } Console.WriteLine();
                     }
                 }
-                Console.WriteLine();
             }
         }
 

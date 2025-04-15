@@ -161,21 +161,28 @@ namespace uno_flip
             TakeCardFromDeck(ref deck, ref stack);
             while (stack.Last() < 7){
                 deck.Add(stack[0]);
-                stack.RemoveAt(stack.Last());
+                stack.RemoveAt(0);
                 TakeCardFromDeck(ref deck, ref stack);
             }
             
 
-
             while (true){
+                Console.Clear();
+                SortDeck(ref opponent_cards);
+                SortDeck(ref user_cards);
                 ShowCardSituation(ref opponent_cards, ref deck, ref stack, ref user_cards);
-                Console.WriteLine("Backspace to take a card:");
+                Console.WriteLine("\n\nBackspace or Space to take a card; Enter to change side; q to quit");
                 ConsoleKeyInfo keyInfo = Console.ReadKey(true);
 
-                if (keyInfo.Key == ConsoleKey.Backspace){
-                    if (stack.Count > 0){
+                if (keyInfo.Key == ConsoleKey.Backspace || keyInfo.Key == ConsoleKey.Spacebar){
+                    if (deck.Count > 0){
                         TakeCardFromDeck(ref deck, ref user_cards);
                     }
+                } else if (keyInfo.Key == ConsoleKey.Enter){
+                    GlobalVars.main_side = !GlobalVars.main_side;
+                } else if (keyInfo.Key == ConsoleKey.Q){
+                    Environment.Exit(0);
+                    //System.Diagnostics.Process.GetCurrentProcess().Kill();
                 }
             }
         }
@@ -190,11 +197,20 @@ namespace uno_flip
 
         }//todo
 
+        public static void SortDeck(ref List<int> deck){
+            if (GlobalVars.main_side) {
+                deck = deck.OrderBy(card => GlobalVars.cards[card].main_color).ThenBy(card => GlobalVars.cards[card].main_value).ThenBy(card => GlobalVars.cards[card].reverse_color).ThenBy(card => GlobalVars.cards[card].reverse_value).ToList();
+            } else {
+                deck = deck.OrderBy(card => GlobalVars.cards[card].reverse_color).ThenBy(card => GlobalVars.cards[card].reverse_value).ThenBy(card => GlobalVars.cards[card].main_color).ThenBy(card => GlobalVars.cards[card].main_value).ToList();
+            }
+        }
+
         public static void ShowCardSituation(ref List<int> opponent_cards, ref List<int> deck, ref List<int> stack, ref List<int> user_cards){
             InputOutput.PrintCards(InputOutput.GetCards(opponent_cards), main_side: !GlobalVars.main_side, show_other_side: false, compact: false, small: true);
             Console.WriteLine();
             Console.WriteLine();
-            InputOutput.PrintCards(InputOutput.GetCards(deck[0]), main_side: !GlobalVars.main_side, show_other_side: false, compact: true, small: false, spacing: "     ");
+            if (deck.Count > 1) InputOutput.PrintCards(InputOutput.GetCards(deck[0]), main_side: !GlobalVars.main_side, show_other_side: false, compact: true, small: false, spacing: "     ");
+            else input_output.InputOutput.WriteWithColor("     ╭─────╮\n     │EMPTY│\n     ╰─────╯\n", ConsoleColor.DarkGray);
             InputOutput.PrintCards(InputOutput.GetCards(stack.Last()), main_side: GlobalVars.main_side, show_other_side: false, compact: false, small: false, spacing: "     ");
             Console.WriteLine();
             Console.WriteLine();
