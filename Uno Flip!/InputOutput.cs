@@ -275,15 +275,17 @@ namespace uno_flip{
         }
 
 
-        public static void PrintCards(Card[] cards, bool? main_side = null, bool show_other_side = false, bool compact = false, string spacing = ""){
+        public static void PrintCards(Card[] cards, bool? main_side = null, bool show_other_side = false, bool small = false, bool compact = false, string spacing = ""){
             ConsoleColor color;
             string value;
             string type;
 
             int _MAX_CARD_WIDTH = 10;
-            int _MAX_CARD_WIDTH_UNTIL_COMPACT = 7;
+            int _MAX_CARDS_UNTIL_COMPACT = _MAX_CARD_WIDTH;
+            int _MAX_CARDS_UNTIL_SMALL = 8;
 
-            if (!compact && cards.Length > _MAX_CARD_WIDTH_UNTIL_COMPACT) compact = true;
+            if (cards.Length > _MAX_CARDS_UNTIL_COMPACT) compact = true;
+            if (cards.Length > _MAX_CARDS_UNTIL_SMALL) small = true;
 
             main_side ??= GlobalVars.main_side;
             bool real_main_side = main_side.GetValueOrDefault();
@@ -317,7 +319,7 @@ namespace uno_flip{
                 }
 
 
-                if (!compact){
+                if (!small){
                     if (show_other_side){
                         foreach (Card card in cards_part){
                             if (card.main_color == -1) break;
@@ -331,41 +333,59 @@ namespace uno_flip{
                         } Console.WriteLine();
                     }
 
-                    foreach (Card card in cards_part){
-                        if (card.main_color == -1) break;
-                        ParseCard(out color, out value, out type, card, real_main_side);
-                        input_output.InputOutput.WriteWithColor($"{spacing}╭─────╮  ", color);
-                    } Console.WriteLine();
-                    foreach (Card card in cards_part){
-                        if (card.main_color == -1) break;
-                        ParseCard(out color, out value, out type, card, real_main_side);
-                        input_output.InputOutput.WriteWithColor($"{spacing}│{type}    │  ", color);
-                    } Console.WriteLine();
-                    foreach (Card card in cards_part){
-                        if (card.main_color == -1) break;
-                        ParseCard(out color, out value, out type, card, real_main_side);
-                        input_output.InputOutput.WriteWithColor($"{spacing}│     │  ", color);
-                    } Console.WriteLine();
-                    foreach (Card card in cards_part){
-                        if (card.main_color == -1) break;
-                        ParseCard(out color, out value, out type, card, real_main_side);
-                        input_output.InputOutput.WriteWithColor($"{spacing}│ {value}  │  ", color);
-                    } Console.WriteLine();
-                    foreach (Card card in cards_part){
-                        if (card.main_color == -1) break;
-                        ParseCard(out color, out value, out type, card, real_main_side);
-                        input_output.InputOutput.WriteWithColor($"{spacing}│     │  ", color);
-                    } Console.WriteLine();
-                    foreach (Card card in cards_part){
-                        if (card.main_color == -1) break;
-                        ParseCard(out color, out value, out type, card, real_main_side);
-                        input_output.InputOutput.WriteWithColor($"{spacing}│    {type}│  ", color);
-                    } Console.WriteLine();
-                    foreach (Card card in cards_part){
-                        if (card.main_color == -1) break;
-                        ParseCard(out color, out value, out type, card, real_main_side);
-                        input_output.InputOutput.WriteWithColor($"{spacing}╰─────╯  ", color);
-                    } Console.WriteLine();
+                    if (!compact){   
+                        foreach (Card card in cards_part){
+                            if (card.main_color == -1) break;
+                            ParseCard(out color, out value, out type, card, real_main_side);
+                            input_output.InputOutput.WriteWithColor($"{spacing}╭─────╮  ", color);
+                        } Console.WriteLine();
+                        foreach (Card card in cards_part){
+                            if (card.main_color == -1) break;
+                            ParseCard(out color, out value, out type, card, real_main_side);
+                            input_output.InputOutput.WriteWithColor($"{spacing}│{type}    │  ", color);
+                        } Console.WriteLine();
+                        foreach (Card card in cards_part){
+                            if (card.main_color == -1) break;
+                            ParseCard(out color, out value, out type, card, real_main_side);
+                            input_output.InputOutput.WriteWithColor($"{spacing}│     │  ", color);
+                        } Console.WriteLine();
+                        foreach (Card card in cards_part){
+                            if (card.main_color == -1) break;
+                            ParseCard(out color, out value, out type, card, real_main_side);
+                            input_output.InputOutput.WriteWithColor($"{spacing}│ {value}  │  ", color);
+                        } Console.WriteLine();
+                        foreach (Card card in cards_part){
+                            if (card.main_color == -1) break;
+                            ParseCard(out color, out value, out type, card, real_main_side);
+                            input_output.InputOutput.WriteWithColor($"{spacing}│     │  ", color);
+                        } Console.WriteLine();
+                        foreach (Card card in cards_part){
+                            if (card.main_color == -1) break;
+                            ParseCard(out color, out value, out type, card, real_main_side);
+                            input_output.InputOutput.WriteWithColor($"{spacing}│    {type}│  ", color);
+                        } Console.WriteLine();
+                        foreach (Card card in cards_part){
+                            if (card.main_color == -1) break;
+                            ParseCard(out color, out value, out type, card, real_main_side);
+                            input_output.InputOutput.WriteWithColor($"{spacing}╰─────╯  ", color);
+                        } Console.WriteLine();
+                    } else {
+                        foreach (Card card in cards_part){
+                            if (card.main_color == -1) break;
+                            ParseCard(out color, out value, out type, card, real_main_side);
+                            input_output.InputOutput.WriteWithColor($"{spacing}╭─────╮  ", color);
+                        } Console.WriteLine();
+                        foreach (Card card in cards_part){
+                            if (card.main_color == -1) break;
+                            ParseCard(out color, out value, out type, card, real_main_side);
+                            input_output.InputOutput.WriteWithColor($"{spacing}│{type}{value}  │  ", color);
+                        } Console.WriteLine();
+                        foreach (Card card in cards_part){
+                            if (card.main_color == -1) break;
+                            ParseCard(out color, out value, out type, card, real_main_side);
+                            input_output.InputOutput.WriteWithColor($"{spacing}╰─────╯  ", color);
+                        } Console.WriteLine();
+                    }
                 } else {
                     if (show_other_side){
                         foreach (Card card in cards_part){
@@ -380,39 +400,57 @@ namespace uno_flip{
                         } Console.WriteLine();
                     }
 
-                    foreach (Card card in cards_part){
-                        if (card.main_color == -1) break;
-                        ParseCard(out color, out value, out type, card, real_main_side);
-                        input_output.InputOutput.WriteWithColor($"╭───╮  ", color);
-                    } Console.WriteLine();
-                    foreach (Card card in cards_part){
-                        if (card.main_color == -1) break;
-                        ParseCard(out color, out value, out type, card, real_main_side);
-                        input_output.InputOutput.WriteWithColor($"│{type}  │  ", color);
-                    } Console.WriteLine();
-                    foreach (Card card in cards_part){
-                        if (card.main_color == -1) break;
-                        ParseCard(out color, out value, out type, card, real_main_side);
-                        input_output.InputOutput.WriteWithColor($"│{value} │  ", color);
-                    } Console.WriteLine();
-                    foreach (Card card in cards_part){
-                        if (card.main_color == -1) break;
-                        ParseCard(out color, out value, out type, card, real_main_side);
-                        input_output.InputOutput.WriteWithColor($"│  {type}│  ", color);
-                    } Console.WriteLine();
-                    foreach (Card card in cards_part){
-                        if (card.main_color == -1) break;
-                        ParseCard(out color, out value, out type, card, real_main_side);
-                        input_output.InputOutput.WriteWithColor($"╰───╯  ", color);
-                    } Console.WriteLine();
+                    if (!compact) {
+                        foreach (Card card in cards_part){
+                            if (card.main_color == -1) break;
+                            ParseCard(out color, out value, out type, card, real_main_side);
+                            input_output.InputOutput.WriteWithColor($"╭───╮  ", color);
+                        } Console.WriteLine();
+                        foreach (Card card in cards_part){
+                            if (card.main_color == -1) break;
+                            ParseCard(out color, out value, out type, card, real_main_side);
+                            input_output.InputOutput.WriteWithColor($"│{type}  │  ", color);
+                        } Console.WriteLine();
+                        foreach (Card card in cards_part){
+                            if (card.main_color == -1) break;
+                            ParseCard(out color, out value, out type, card, real_main_side);
+                            input_output.InputOutput.WriteWithColor($"│{value} │  ", color);
+                        } Console.WriteLine();
+                        foreach (Card card in cards_part){
+                            if (card.main_color == -1) break;
+                            ParseCard(out color, out value, out type, card, real_main_side);
+                            input_output.InputOutput.WriteWithColor($"│  {type}│  ", color);
+                        } Console.WriteLine();
+                        foreach (Card card in cards_part){
+                            if (card.main_color == -1) break;
+                            ParseCard(out color, out value, out type, card, real_main_side);
+                            input_output.InputOutput.WriteWithColor($"╰───╯  ", color);
+                        } Console.WriteLine();
+                    } else {
+                        foreach (Card card in cards_part){
+                            if (card.main_color == -1) break;
+                            ParseCard(out color, out value, out type, card, real_main_side);
+                            input_output.InputOutput.WriteWithColor($"╭───╮  ", color);
+                        } Console.WriteLine();
+                        foreach (Card card in cards_part){
+                            if (card.main_color == -1) break;
+                            ParseCard(out color, out value, out type, card, real_main_side);
+                            input_output.InputOutput.WriteWithColor($"│{type}{value}│  ", color);
+                        } Console.WriteLine();
+                        foreach (Card card in cards_part){
+                            if (card.main_color == -1) break;
+                            ParseCard(out color, out value, out type, card, real_main_side);
+                            input_output.InputOutput.WriteWithColor($"╰───╯  ", color);
+                        } Console.WriteLine();
+                    }
                 }
                 Console.WriteLine();
             }
         }
 
-        public static void PrintCards(Card card, bool? main_side = null, bool show_other_side = false, bool compact = false, string spacing = ""){
+        public static void PrintCards(Card card, bool? main_side = null, bool show_other_side = false, bool small = false, bool compact = false, string spacing = ""){
             Card[] cards = [card];
-            PrintCards(cards, main_side, show_other_side, compact, spacing);
+            PrintCards(cards, main_side, show_other_side, small, compact, spacing);
         }
     }
 }

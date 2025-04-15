@@ -124,7 +124,7 @@ namespace uno_flip
             new Card(2, -1, 0, 0),
             new Card(2, -2, 4, 3),
             new Card(2, -2, 1, -4),
-        ]; // TODO: fill it up
+        ];
 
         public static bool main_side = true;
     }
@@ -160,23 +160,25 @@ namespace uno_flip
                 opponent_cards.Add(deck[0]);
                 deck.RemoveAt(0);
             }
-            stack.Add(deck_new[0]);
+
+            stack.Add(deck[0]);
             deck.RemoveAt(0);
+            while (stack.Last() < 7){
+                deck.Add(stack[0]);
+                stack.Add(deck[0]);
+                deck.RemoveAt(0);
+            }
+            
 
 
-            InputOutput.PrintCards(InputOutput.GetCards(opponent_cards), main_side: !GlobalVars.main_side, show_other_side: true, compact: true);
+            InputOutput.PrintCards(InputOutput.GetCards(opponent_cards), main_side: !GlobalVars.main_side, show_other_side: false, small: true);
             Console.WriteLine();
             Console.WriteLine();
-            InputOutput.PrintCards(InputOutput.GetCards(stack.Last()), main_side: GlobalVars.main_side, show_other_side: true, compact: false, spacing: "     ");
+            InputOutput.PrintCards(InputOutput.GetCards(stack.Last()), main_side: GlobalVars.main_side, show_other_side: false, small: false, spacing: "     ");
             Console.WriteLine();
             Console.WriteLine();
             InputOutput.PrintCards(InputOutput.GetCards(user_cards), show_other_side: true);
 
-            Console.WriteLine();
-            Console.WriteLine();
-            Console.WriteLine();
-            Console.WriteLine();
-            InputOutput.PrintCards(InputOutput.GetCards(deck), show_other_side: true);
         }
     }
 }
