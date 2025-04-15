@@ -154,31 +154,51 @@ namespace uno_flip
             List<int> stack = new List<int>();
 
             for (int i = 0; i < 7; i++){
-                user_cards.Add(deck[0]);
-                deck.RemoveAt(0);
-
-                opponent_cards.Add(deck[0]);
-                deck.RemoveAt(0);
+                TakeCardFromDeck(ref deck, ref opponent_cards);
+                TakeCardFromDeck(ref deck, ref user_cards);
             }
 
-            stack.Add(deck[0]);
-            deck.RemoveAt(0);
+            TakeCardFromDeck(ref deck, ref stack);
             while (stack.Last() < 7){
                 deck.Add(stack[0]);
-                stack.Add(deck[0]);
-                deck.RemoveAt(0);
+                stack.RemoveAt(stack.Last());
+                TakeCardFromDeck(ref deck, ref stack);
             }
             
 
 
-            InputOutput.PrintCards(InputOutput.GetCards(opponent_cards), main_side: !GlobalVars.main_side, show_other_side: false, small: true);
+            while (true){
+                ShowCardSituation(ref opponent_cards, ref deck, ref stack, ref user_cards);
+                Console.WriteLine("Backspace to take a card:");
+                ConsoleKeyInfo keyInfo = Console.ReadKey(true);
+
+                if (keyInfo.Key == ConsoleKey.Backspace){
+                    if (stack.Count > 0){
+                        TakeCardFromDeck(ref deck, ref user_cards);
+                    }
+                }
+            }
+        }
+
+
+        public static void TakeCardFromDeck(ref List<int> deck, ref List<int> stack){
+            stack.Add(deck[0]);
+            deck.RemoveAt(0);
+        }
+
+        public static void ShuffleDeck(){
+
+        }//todo
+
+        public static void ShowCardSituation(ref List<int> opponent_cards, ref List<int> deck, ref List<int> stack, ref List<int> user_cards){
+            InputOutput.PrintCards(InputOutput.GetCards(opponent_cards), main_side: !GlobalVars.main_side, show_other_side: false, compact: false, small: true);
             Console.WriteLine();
             Console.WriteLine();
-            InputOutput.PrintCards(InputOutput.GetCards(stack.Last()), main_side: GlobalVars.main_side, show_other_side: false, small: false, spacing: "     ");
+            InputOutput.PrintCards(InputOutput.GetCards(deck[0]), main_side: !GlobalVars.main_side, show_other_side: false, compact: true, small: false, spacing: "     ");
+            InputOutput.PrintCards(InputOutput.GetCards(stack.Last()), main_side: GlobalVars.main_side, show_other_side: false, compact: false, small: false, spacing: "     ");
             Console.WriteLine();
             Console.WriteLine();
             InputOutput.PrintCards(InputOutput.GetCards(user_cards), show_other_side: true);
-
         }
     }
 }
