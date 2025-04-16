@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Uno Flip!")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1a18d9dc7f9cc5e447b5071ea2bbffb7e7c7e00c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+dab4b6ed03c13fd70c941c61da18d59c0d4d1f46")]
 [assembly: System.Reflection.AssemblyProductAttribute("Uno Flip!")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Uno Flip!")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
