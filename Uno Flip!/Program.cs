@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Diagnostics;
+using System.Threading;
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
 
 namespace uno_flip
@@ -135,16 +136,21 @@ namespace uno_flip
     {
         static void Main()
         {   
+            bool win = false;
             while(true) {
-                Main2();
-
+                win = Game();
+                Console.CursorVisible = false;
+                if (win) input_output.InputOutput.WriteWithColor("\n\t\tYou win!", ConsoleColor.Green);
+                else input_output.InputOutput.WriteWithColor("\n\t\tYou lose!", ConsoleColor.Red);
+                Thread.Sleep(5000);
+                Console.CursorVisible = true;
                 GlobalVars.main_side = true;
             }
         }
 
 
 
-        public static void Main2() {
+        public static bool Game() {
             Random random = new Random();
 
             List<int> deck = new List<int>();
@@ -172,22 +178,57 @@ namespace uno_flip
             bool last_move = false;
             string bot_played = "";
             string info = "Play a card!";
+            bool player_skip = false;
+            bool bot_skip = false;
+            int draw_chain = 0;
             while (true){
+                if (info.Contains("win")) return true;
+                if (bot_played.Contains("lose")) return false;
+                
                 Console.Clear();
 
                 SortDeck(ref opponent_cards);
                 SortDeck(ref user_cards);
-                ShowCardSituation(ref opponent_cards, ref deck, ref stack, ref user_cards);
-                Console.WriteLine("\n\nwrite a card code (written in its bottom left) to play it\nif it's a wild add a color code at the end to set that color\n\t(r red, y yellow, g green, b blue; c cyan, p purple, m magenta, o orange)\n\"#\" to draw a card\nadd \"!\" at the end to call UNO!\n");
+                ShowCardSituation(ref opponent_cards, ref deck, ref stack, ref user_cards, draw_chain);
+                Console.WriteLine();
+                //Console.WriteLine("\n\nwrite a card code (written in its bottom left) to play it\nif it's a wild add a color code at the end to set that color\n\t(r red, y yellow, g green, b blue; c cyan, p purple, m magenta, o orange)\n\"#\" to draw a card\nadd \"!\" at the end to call UNO!\n");
                 
                 if (last_move) {
+                    if (!info.Contains("skipped")) input_output.InputOutput.WriteWithColor($"{info}\n", ConsoleColor.Green);
+                    else input_output.InputOutput.WriteWithColor($"{info}\n", ConsoleColor.DarkGreen);
+                    if (!bot_skip) {
+                        input_output.InputOutput.WriteWithColor($"Waiting for bot...", ConsoleColor.DarkCyan);
+                        //if (player_skip) input_output.InputOutput.WriteWithColor($"\t Bot played {bot_played}", ConsoleColor.DarkYellow);
+                        input_output.InputOutput.WriteWithColor($"\n", ConsoleColor.DarkCyan);
+                        Console.CursorVisible = false;
+                        Thread.Sleep(1500);
+                        bot_played = BotMove(ref opponent_cards, ref stack, ref deck, ref player_skip, ref draw_chain);
+                    }
+                    Console.Clear();
+
+                    SortDeck(ref opponent_cards);
+                    SortDeck(ref user_cards);
+                    ShowCardSituation(ref opponent_cards, ref deck, ref stack, ref user_cards, draw_chain);
+                    Console.WriteLine();
+
+                    //Console.WriteLine("\n\nwrite a card code (written in its bottom left) to play it\nif it's a wild add a color code at the end to set that color\n\t(r red, y yellow, g green, b blue; c cyan, p purple, m magenta, o orange)\n\"#\" to draw a card\nadd \"!\" at the end to call UNO!\n");
                     input_output.InputOutput.WriteWithColor($"{info}\n", ConsoleColor.Green);
-                    input_output.InputOutput.WriteWithColor($"Bot played {bot_played}\n", ConsoleColor.Yellow);
-                    input_output.InputOutput.WriteWithColor($"Next move > ", ConsoleColor.Gray);
+                    if (!bot_skip) input_output.InputOutput.WriteWithColor($"Bot played {bot_played}\n", ConsoleColor.Cyan);
+                    else input_output.InputOutput.WriteWithColor($"Bot skipped\n", ConsoleColor.DarkCyan);
+                    if (!player_skip){
+                        if (draw_chain == 0) {
+                            input_output.InputOutput.WriteWithColor($"\nNext move", ConsoleColor.Gray);
+                        } else {
+                            input_output.InputOutput.WriteWithColor($"chain: {draw_chain}", ConsoleColor.Yellow);
+                        }
+                        input_output.InputOutput.WriteWithColor($" > ", ConsoleColor.DarkGray);
+                    } 
+                    Console.CursorVisible = true;
+                    bot_skip = false;
                 } else {
-                    if (bot_played != "") input_output.InputOutput.WriteWithColor($"\nBot played {bot_played}\n", ConsoleColor.Yellow);
+                    if (bot_played != "") input_output.InputOutput.WriteWithColor($"\nBot played {bot_played}\n", ConsoleColor.Cyan);
                     else Console.Write("\n\n");
-                    input_output.InputOutput.WriteWithColor($"{info}", ConsoleColor.Red);
+                    input_output.InputOutput.WriteWithColor($"\n{info}", ConsoleColor.Red);
                     input_output.InputOutput.WriteWithColor($" > ", ConsoleColor.Gray);
                 }
                 //Console.WriteLine($"{keyInfo.Key} pressed; it's {keyInfo.KeyChar} char");
@@ -213,28 +254,50 @@ namespace uno_flip
                 //     return;
                 //     //System.Diagnostics.Process.GetCurrentProcess().Kill();
                 // }
-                string input = Console.ReadLine();
                 #pragma warning disable CS8604 // Possible null reference argument.
-                last_move = ValidateMove(input, ref user_cards, ref stack, ref deck, out info);
-                if (last_move) bot_played = BotMove(ref opponent_cards, ref stack, ref deck);
+                if (!player_skip) {
+                    string input = Console.ReadLine();
+                    last_move = ValidateMove(input, ref user_cards, ref stack, ref deck, ref bot_skip, ref draw_chain, out info);
+                }
+                else {
+                    last_move = true;
+                    info = "You skipped";
+                    player_skip = false;
+                }
             }
         }
 
-        public static void TakeCardFromDeck(ref List<int> deck, ref List<int> stack, bool to_end = true){
-            if (deck.Count == 0) return;
-            if (to_end) stack.Add(deck[0]);
-            else stack.Insert(0, deck[0]);
-            deck.RemoveAt(0);
+        public static void TakeCardFromDeck(ref List<int> deck, ref List<int> stack, bool to_end = true, int amount = 1){
+            for (int i = 0; i < amount; i++) {
+                if (deck.Count == 0) return;
+                if (to_end) stack.Add(deck[0]);
+                else stack.Insert(0, deck[0]);
+                deck.RemoveAt(0);
+            }
         }
 
 
-        public static void PlaceCard(ref List<int> stack, ref List<int> cards, int card){
+        public static void PlaceCard(ref List<int> stack, ref List<int> cards, ref bool skip, int card, ref int draw_chain){
             if (GlobalVars.main_side) stack.Add(card);
             else stack.Insert(0, card);
             cards.Remove(card);
 
-            if ((GlobalVars.main_side && GlobalVars.cards[card].main_value == -4) || (!GlobalVars.main_side && GlobalVars.cards[card].reverse_value == -4))
+            if (( GlobalVars.main_side && (GlobalVars.cards[card].main_value == -1 || GlobalVars.cards[card].main_value == -2)) ||
+                (!GlobalVars.main_side && (GlobalVars.cards[card].reverse_value == -1 || GlobalVars.cards[card].reverse_value == -2)))
+                    skip = true;
+            
+
+            if (( GlobalVars.main_side && GlobalVars.cards[card].main_value == -4) ||
+                (!GlobalVars.main_side && GlobalVars.cards[card].reverse_value == -4))
                 GlobalVars.main_side = !GlobalVars.main_side;
+
+            if (( GlobalVars.main_side && GlobalVars.cards[card].main_value == -3) ||
+                (!GlobalVars.main_side && GlobalVars.cards[card].reverse_value == -3)) {
+                    if (GlobalVars.main_side) draw_chain++;
+                    else draw_chain += 5;
+                }
+                
+
         }
 
 
@@ -261,7 +324,7 @@ namespace uno_flip
             }
         }
 
-        public static void ShowCardSituation(ref List<int> opponent_cards, ref List<int> deck, ref List<int> stack, ref List<int> user_cards){
+        public static void ShowCardSituation(ref List<int> opponent_cards, ref List<int> deck, ref List<int> stack, ref List<int> user_cards, int chain_length = 0){
             InputOutput.PrintCards(InputOutput.GetCards(opponent_cards), main_side: !GlobalVars.main_side, show_other_side: false, compact: false, small: true);
             input_output.InputOutput.WriteWithColor($"cards: {opponent_cards.Count}\n", ConsoleColor.DarkGray);
             Console.WriteLine();
@@ -274,95 +337,152 @@ namespace uno_flip
             if (Console.WindowHeight > 40) Console.WriteLine();
             Console.WriteLine();
             Console.WriteLine();
-            input_output.InputOutput.WriteWithColor($"cards: {user_cards.Count}   ", ConsoleColor.White);
+            input_output.InputOutput.WriteWithColor($"cards: {user_cards.Count}\t", ConsoleColor.White);
             input_output.InputOutput.WriteWithColor("current side: ", ConsoleColor.White);
-            if (GlobalVars.main_side) input_output.InputOutput.WriteWithColor("↑ light\n", ConsoleColor.Yellow);
-            else input_output.InputOutput.WriteWithColor("↯ dark\n", ConsoleColor.Cyan);
+            if (GlobalVars.main_side) input_output.InputOutput.WriteWithColor("↑ light\t", ConsoleColor.Yellow);
+            else input_output.InputOutput.WriteWithColor("↯ dark\t", ConsoleColor.Cyan);
+            Console.WriteLine();
             InputOutput.PrintCards(InputOutput.GetCards(user_cards), show_other_side: true, show_codes: true);
         }
 
 
-        public static bool ValidateMove(string input, ref List<int> cards, ref List<int> stack, ref List<int> deck, out string info){
+        public static bool ValidateMove(string input, ref List<int> cards, ref List<int> stack, ref List<int> deck, ref bool skip, ref int draw_chain, out string info){
             info = "";
             input = input.Trim().ToLower();
             string no_uno_input = input.EndsWith('!') ? input[..^1] : input;
 
-            if (input.StartsWith('#')) {
-                TakeCardFromDeck(ref deck, ref cards);
-                if (GlobalVars.main_side) info = $"You played #\tDrew 1 card: {GlobalVars.cards[cards.Last()].main_code}";
-                else info = $"You played #\tDrew 1 card: {GlobalVars.cards[cards.Last()].reverse_code}";
+            if (input == "#" || input == "") {
+                if (draw_chain == 0) draw_chain++;
+                TakeCardFromDeck(ref deck, ref cards, false, draw_chain);
+                info = $"You played #\tDrew {draw_chain} card(s)";
+                draw_chain = 0;
                 return true;
             }
 
+            
         
             foreach (int card in cards) {
-                if ((no_uno_input == $"{GlobalVars.cards[card].main_code}" && GlobalVars.main_side) || (no_uno_input == $"{GlobalVars.cards[card].reverse_code}" && !GlobalVars.main_side)) {
-                    if ((GlobalVars.main_side &&
-                            (GlobalVars.cards[card].main_color == GlobalVars.cards[stack.Last()].main_color || GlobalVars.cards[card].main_value == GlobalVars.cards[stack.Last()].main_value)) ||
+                if (draw_chain == 0) {
+                    if ((no_uno_input == $"{GlobalVars.cards[card].main_code}" && GlobalVars.main_side) || (no_uno_input == $"{GlobalVars.cards[card].reverse_code}" && !GlobalVars.main_side)) {
+                        if ((GlobalVars.main_side &&
+                                (GlobalVars.cards[card].main_color == GlobalVars.cards[stack.Last()].main_color || GlobalVars.cards[card].main_color == 0 || GlobalVars.cards[stack.Last()].main_color == 0 || GlobalVars.cards[card].main_value == GlobalVars.cards[stack.Last()].main_value)) ||
 
-                        (!GlobalVars.main_side &&
-                            (GlobalVars.cards[card].reverse_color == GlobalVars.cards[stack[0]].reverse_color || GlobalVars.cards[card].reverse_value == GlobalVars.cards[stack[0]].reverse_value))) {
+                            (!GlobalVars.main_side &&
+                                (GlobalVars.cards[card].reverse_color == GlobalVars.cards[stack[0]].reverse_color || GlobalVars.cards[card].reverse_color == 0 || GlobalVars.cards[stack[0]].reverse_color == 0 || GlobalVars.cards[card].reverse_value == GlobalVars.cards[stack[0]].reverse_value))) {
 
 
-                        PlaceCard(ref stack, ref cards, card);
-                        info = $"You played {input}";
-                        if (cards.Count == 1) {
-                            if (!input.EndsWith('!')){
-                                TakeCardFromDeck(ref deck, ref cards);
-                                TakeCardFromDeck(ref deck, ref cards);
-                                info = $"You played {input}\t1 card, no \"uno\" => draw 2";
+                            PlaceCard(ref stack, ref cards, ref skip, card, ref draw_chain);
+                            info = $"You played {input}";
+                            if (cards.Count == 1) {
+                                if (!input.EndsWith('!')){
+                                    TakeCardFromDeck(ref deck, ref cards);
+                                    TakeCardFromDeck(ref deck, ref cards);
+                                    info = $"You played {input}\tDrew 2 cards (no UNO when you have only 1 card)";
+                                } else {
+                                    info = $"You played {input}\tUNO!";
+                                }
                             } else {
-                                info = $"You played {input}; UNO!";
+                                if (input.EndsWith('!')){
+                                    TakeCardFromDeck(ref deck, ref cards);
+                                    TakeCardFromDeck(ref deck, ref cards);
+                                    info = $"You played {input}\tDrew 2 cards (UNO when you have other than 1 card)";
+                                }
                             }
-                        } else {
-                            if (input.EndsWith('!')){
-                                TakeCardFromDeck(ref deck, ref cards);
-                                TakeCardFromDeck(ref deck, ref cards);
-                                info = $"You played {input}; UNO!\t >1 card with \"uno\" => draw 2";
+                            if (cards.Count == 0) {
+                                info = $"You played {input}\tYou win!";
                             }
+                            return true;
                         }
-                        if (cards.Count == 0) {
-                            info = $"You played {input}\tYou win!";
-                        }
-                        return true;
+                        info = "This card can't be played. Try again";
+                        return false;
                     }
-                    info = "This card can't be played. Try again";
-                    return false;
+                } else {
+                    if ((no_uno_input == $"{GlobalVars.cards[card].main_code}" && GlobalVars.main_side) || (no_uno_input == $"{GlobalVars.cards[card].reverse_code}" && !GlobalVars.main_side)) {
+                        if ((GlobalVars.main_side &&
+                                GlobalVars.cards[card].main_value == -3) ||
+
+                            (!GlobalVars.main_side &&
+                                GlobalVars.cards[card].reverse_value == -3)) {
+
+                            PlaceCard(ref stack, ref cards, ref skip, card, ref draw_chain);
+                            info = $"You played {input}";
+                            if (cards.Count == 1) {
+                                if (!input.EndsWith('!')){
+                                    TakeCardFromDeck(ref deck, ref cards);
+                                    TakeCardFromDeck(ref deck, ref cards);
+                                    info = $"You played {input}\tDrew 2 cards (no UNO when you have only 1 card)";
+                                } else {
+                                    info = $"You played {input}\tUNO!";
+                                }
+                            } else {
+                                if (input.EndsWith('!')){
+                                    TakeCardFromDeck(ref deck, ref cards);
+                                    TakeCardFromDeck(ref deck, ref cards);
+                                    info = $"You played {input}Drew 2 cards (UNO when you have more than 1 card)";
+                                }
+                            }
+                            if (cards.Count == 0) {
+                                info = $"You played {input}\tYou win!";
+                            }
+                            return true;
+                        }
+                        info = "Currently chaining; only +. Try again";
+                        return false;
+                    }
                 }
             }
 
-            info = "Invalid syntax or you don't have that card. Try again";
+            info = "You don't have that card. Try again";
             return false;
         }
 
-        public static string BotMove(ref List<int> cards, ref List<int> stack, ref List<int> deck) {
-            foreach (int card in cards) {
-                if (GlobalVars.main_side) {
-                    if (GlobalVars.cards[card].main_color == GlobalVars.cards[stack.Last()].main_color || GlobalVars.cards[card].main_value == GlobalVars.cards[stack.Last()].main_value) {
-                        PlaceCard(ref stack, ref cards, card);
-                        if (cards.Count > 1) return $"{GlobalVars.cards[card].main_code}";
-                        else if (cards.Count == 1) return $"{GlobalVars.cards[card].main_code}; UNO!";
-                        else return $"{GlobalVars.cards[card].main_code}\tYou lose!";
-                    }
-                } else {
-                    if (GlobalVars.cards[card].reverse_color == GlobalVars.cards[stack[0]].reverse_color || GlobalVars.cards[card].reverse_value == GlobalVars.cards[stack[0]].reverse_value) {
-                        PlaceCard(ref stack, ref cards, card);
-                        if (cards.Count > 1) return $"{GlobalVars.cards[card].reverse_code}";
-                        else if (cards.Count == 1) return $"{GlobalVars.cards[card].reverse_code}; UNO!";
-                        else return $"{GlobalVars.cards[card].reverse_code}\tYou lose!";
+        public static string BotMove(ref List<int> cards, ref List<int> stack, ref List<int> deck, ref bool skip, ref int draw_chain) {
+            if (draw_chain == 0) {
+                foreach (int card in cards) {
+                    if (GlobalVars.main_side) {
+                        if (GlobalVars.cards[card].main_color == GlobalVars.cards[stack.Last()].main_color || GlobalVars.cards[card].main_value == GlobalVars.cards[stack.Last()].main_value) {
+                            PlaceCard(ref stack, ref cards, ref skip, card, ref draw_chain);
+                            if (cards.Count > 1) return $"{GlobalVars.cards[card].main_code}";
+                            else if (cards.Count == 1) return $"{GlobalVars.cards[card].main_code}!\tUNO!";
+                            else return $"{GlobalVars.cards[card].main_code}\tYou lose!";
+                        }
+                    } else {
+                        if (GlobalVars.cards[card].reverse_color == GlobalVars.cards[stack[0]].reverse_color || GlobalVars.cards[card].reverse_value == GlobalVars.cards[stack[0]].reverse_value) {
+                            PlaceCard(ref stack, ref cards, ref skip, card, ref draw_chain);
+                            if (cards.Count > 1) return $"{GlobalVars.cards[card].reverse_code}";
+                            else if (cards.Count == 1) return $"{GlobalVars.cards[card].reverse_code}!\tUNO!";
+                            else return $"{GlobalVars.cards[card].reverse_code}\tYou lose!";
+                        }
                     }
                 }
-            }
 
-            foreach (int card in cards) {
-                if ((GlobalVars.main_side && GlobalVars.cards[card].main_color == 0) || (!GlobalVars.main_side && GlobalVars.cards[card].reverse_color == 0)) {
-                    PlaceCard(ref stack, ref cards, card);
-                    return $"{GlobalVars.cards[card].main_code}";
+                foreach (int card in cards) {
+                    if ((GlobalVars.main_side && GlobalVars.cards[card].main_color == 0) || (!GlobalVars.main_side && GlobalVars.cards[card].reverse_color == 0)) {
+                        PlaceCard(ref stack, ref cards, ref skip, card, ref draw_chain);
+                        return $"{GlobalVars.cards[card].main_code}";
+                    }
+                }
+            } else {
+                foreach (int card in cards) {
+                    if (GlobalVars.main_side) {
+                        if (GlobalVars.cards[card].main_value == -3) {
+                            PlaceCard(ref stack, ref cards, ref skip, card, ref draw_chain);
+                            return $"{GlobalVars.cards[card].main_code}";
+                        }
+                    } else {
+                        if (GlobalVars.cards[card].reverse_value == -3) {
+                            PlaceCard(ref stack, ref cards, ref skip, card, ref draw_chain);
+                            return $"{GlobalVars.cards[card].reverse_code}";
+                        }
+                    }
                 }
             }
 
             TakeCardFromDeck(ref deck, ref cards);
-            return "#";
+            if (draw_chain == 0) draw_chain++;
+            string ret = $"#\tDrew {draw_chain} card(s)";
+            draw_chain = 0;
+            return ret;
         }
     }
 }
