@@ -1,0 +1,33 @@
+name: Release
+on:
+  push:
+    tags:
+      - "v*"
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Set up DotNet Framework Core
+        uses: actions/setup-dotnet@v3.4.2
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Make
+        run: make build
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: uno-flip-${{ github.ref_name }}
+          files: |
+            releases/uno-flip-linux
+            releases/uno-flip.exe
+          body_path: RELEASE_NOTES.md
+          #draft: true    # mark as draft to make reviewable before made available
+          make_latest: true
