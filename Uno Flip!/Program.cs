@@ -303,6 +303,7 @@ namespace uno_flip
         }
 
         public static void DrawCards(ref List<int> deck, ref List<int> stack, ref List<int> game_user_cards, ref List<int> game_opponent_cards, ref List<int> game_deck, ref List<int> game_stack, out int took_amount, bool to_end = true, int amount = 1){
+            Console.CursorVisible = false;
             took_amount = 0;
             if (amount < 0) {
                 do {
@@ -310,6 +311,18 @@ namespace uno_flip
                     SortDeckBot(ref game_opponent_cards);
                     SortDeck(ref game_user_cards);
                     ShowCardSituation(ref game_opponent_cards, ref game_deck, ref game_stack, ref game_user_cards);
+                    input_output.InputOutput.WriteWithColor($"\n\nDrew {took_amount} cards\t", ConsoleColor.Yellow);
+                    if (GlobalVars.main_side) {
+                        if (amount == -1) input_output.InputOutput.WriteWithColor($"Drawing until Red", ConsoleColor.Red);
+                        else if (amount == -2) input_output.InputOutput.WriteWithColor($"Drawing until Yellow", ConsoleColor.Yellow);
+                        else if (amount == -3) input_output.InputOutput.WriteWithColor($"Drawing until Green", ConsoleColor.Green);
+                        else input_output.InputOutput.WriteWithColor($"Drawing until Blue", ConsoleColor.Blue);
+                    } else {
+                        if (amount == -1) input_output.InputOutput.WriteWithColor($"Drawing until Cyan", ConsoleColor.DarkCyan);
+                        else if (amount == -2) input_output.InputOutput.WriteWithColor($"Drawing until Purple", ConsoleColor.DarkMagenta);
+                        else if (amount == -3) input_output.InputOutput.WriteWithColor($"Drawing until Magenta", ConsoleColor.Magenta);
+                        else input_output.InputOutput.WriteWithColor($"Drawing until Orange", ConsoleColor.DarkYellow);
+                    }
                     Thread.Sleep(250);
 
                     if (deck.Count == 0) return;
@@ -321,11 +334,23 @@ namespace uno_flip
                         (GlobalVars.cards[deck[0]].reverse_color != amount*(-1) &&!GlobalVars.main_side) );
                     Console.Clear();
                     ShowCardSituation(ref game_opponent_cards, ref game_deck, ref game_stack, ref game_user_cards);
+                    input_output.InputOutput.WriteWithColor($"\n\nDrew {took_amount} cards\t", ConsoleColor.Yellow);
+                    if (GlobalVars.main_side) {
+                        if (amount == -1) input_output.InputOutput.WriteWithColor($"Drawing until Red", ConsoleColor.Red);
+                        else if (amount == -2) input_output.InputOutput.WriteWithColor($"Drawing until Yellow", ConsoleColor.Yellow);
+                        else if (amount == -3) input_output.InputOutput.WriteWithColor($"Drawing until Green", ConsoleColor.Green);
+                        else input_output.InputOutput.WriteWithColor($"Drawing until Blue", ConsoleColor.Blue);
+                    } else {
+                        if (amount == -1) input_output.InputOutput.WriteWithColor($"Drawing until Cyan", ConsoleColor.DarkCyan);
+                        else if (amount == -2) input_output.InputOutput.WriteWithColor($"Drawing until Purple", ConsoleColor.DarkMagenta);
+                        else if (amount == -3) input_output.InputOutput.WriteWithColor($"Drawing until Magenta", ConsoleColor.Magenta);
+                        else input_output.InputOutput.WriteWithColor($"Drawing until Orange", ConsoleColor.DarkYellow);
+                    }
                     Thread.Sleep(250);
 
                     //PlayCard(ref stack, ref deck, ref skip, stack.Last(), ref );
 
-
+                Console.CursorVisible = true;
                 return;
             }
 
@@ -340,6 +365,7 @@ namespace uno_flip
                 SortDeckBot(ref game_opponent_cards);
                 SortDeck(ref game_user_cards);
                 ShowCardSituation(ref game_opponent_cards, ref game_deck, ref game_stack, ref game_user_cards);
+                input_output.InputOutput.WriteWithColor($"\n\bDrawing {amount} cards", ConsoleColor.Yellow);
                 if (amount > 1) Thread.Sleep(75);
             }
         }
