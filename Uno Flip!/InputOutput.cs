@@ -353,7 +353,7 @@ namespace uno_flip{
                 else true_render_wilds_as = ConsoleColor.Gray;
             }
 
-            if (render_wilds_as != 0) Console.WriteLine($"rendering wilds as {render_wilds_as} (ConsoleColor.{true_render_wilds_as})");
+            // if (render_wilds_as != 0) Console.WriteLine($"rendering wilds as {render_wilds_as} (ConsoleColor.{true_render_wilds_as})");
 
             Card[] cards_part = new Card[_MAX_CARD_WIDTH];
             bool flag = false;
@@ -389,13 +389,15 @@ namespace uno_flip{
                         foreach (Card card in cards_part){
                             if (card.main_color == -1) break;
                             ParseCard(out color, out value, out type, out code, card, !real_main_side);
-                            if (render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
+                            if (real_main_side && render_wilds_as != 0 && card.reverse_color == 0) color = true_render_wilds_as;
+                            else if (!real_main_side && render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
                             input_output.InputOutput.WriteWithColor($"{spacing}╭─────╮ ", color);
                         } Console.WriteLine();
                         foreach (Card card in cards_part){
                             if (card.main_color == -1) break;
                             ParseCard(out color, out value, out type, out code, card, !real_main_side);
-                            if (render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
+                            if (real_main_side && render_wilds_as != 0 && card.reverse_color == 0) color = true_render_wilds_as;
+                            else if (!real_main_side && render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
                             input_output.InputOutput.WriteWithColor($"{spacing}│{type}{value}  │ ", color);
                         } Console.WriteLine();
                     }
@@ -404,43 +406,50 @@ namespace uno_flip{
                         foreach (Card card in cards_part){
                             if (card.main_color == -1) break;
                             ParseCard(out color, out value, out type, out code, card, real_main_side);
-                            if (render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
+                            if (real_main_side && render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
+                            else if (!real_main_side && render_wilds_as != 0 && card.reverse_color == 0) color = true_render_wilds_as;
                             input_output.InputOutput.WriteWithColor($"{spacing}╭─────╮ ", color);
                         } Console.WriteLine();
                         foreach (Card card in cards_part){
                             if (card.main_color == -1) break;
                             ParseCard(out color, out value, out type, out code, card, real_main_side);
-                            if (render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
+                            if (real_main_side && render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
+                            else if (!real_main_side && render_wilds_as != 0 && card.reverse_color == 0) color = true_render_wilds_as;
                             input_output.InputOutput.WriteWithColor($"{spacing}│{type}    │ ", color);
                         } Console.WriteLine();
                         foreach (Card card in cards_part){
                             if (card.main_color == -1) break;
                             ParseCard(out color, out value, out type, out code, card, real_main_side);
-                            if (render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
+                            if (real_main_side && render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
+                            else if (!real_main_side && render_wilds_as != 0 && card.reverse_color == 0) color = true_render_wilds_as;
                             input_output.InputOutput.WriteWithColor($"{spacing}│     │ ", color);
                         } Console.WriteLine();
                         foreach (Card card in cards_part){
                             if (card.main_color == -1) break;
                             ParseCard(out color, out value, out type, out code, card, real_main_side);
-                            if (render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
+                            if (real_main_side && render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
+                            else if (!real_main_side && render_wilds_as != 0 && card.reverse_color == 0) color = true_render_wilds_as;
                             input_output.InputOutput.WriteWithColor($"{spacing}│ {value}  │ ", color);
                         } Console.WriteLine();
                         foreach (Card card in cards_part){
                             if (card.main_color == -1) break;
                             ParseCard(out color, out value, out type, out code, card, real_main_side);
-                            if (render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
+                            if (real_main_side && render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
+                            else if (!real_main_side && render_wilds_as != 0 && card.reverse_color == 0) color = true_render_wilds_as;
                             input_output.InputOutput.WriteWithColor($"{spacing}│     │ ", color);
                         } Console.WriteLine();
                         foreach (Card card in cards_part){
                             if (card.main_color == -1) break;
                             ParseCard(out color, out value, out type, out code, card, real_main_side);
-                            if (render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
+                            if (real_main_side && render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
+                            else if (!real_main_side && render_wilds_as != 0 && card.reverse_color == 0) color = true_render_wilds_as;
                             input_output.InputOutput.WriteWithColor($"{spacing}│    {type}│ ", color);
                         } Console.WriteLine();
                         foreach (Card card in cards_part){
                             if (card.main_color == -1) break;
                             ParseCard(out color, out value, out type, out code, card, real_main_side, back: '─');
-                            if (render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
+                            if (real_main_side && render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
+                            else if (!real_main_side && render_wilds_as != 0 && card.reverse_color == 0) color = true_render_wilds_as;
                             if (show_codes) input_output.InputOutput.WriteWithColor($"{spacing}╰{code}──╯ ", color);
                             else input_output.InputOutput.WriteWithColor($"{spacing}╰─────╯ ", color);
                         } Console.WriteLine();
@@ -448,19 +457,22 @@ namespace uno_flip{
                         foreach (Card card in cards_part){
                             if (card.main_color == -1) break;
                             ParseCard(out color, out value, out type, out code, card, real_main_side);
-                            if (render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
+                            if (real_main_side && render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
+                            else if (!real_main_side && render_wilds_as != 0 && card.reverse_color == 0) color = true_render_wilds_as;
                             input_output.InputOutput.WriteWithColor($"{spacing}╭─────╮ ", color);
                         } Console.WriteLine();
                         foreach (Card card in cards_part){
                             if (card.main_color == -1) break;
                             ParseCard(out color, out value, out type, out code, card, real_main_side);
-                            if (render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
+                            if (real_main_side && render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
+                            else if (!real_main_side && render_wilds_as != 0 && card.reverse_color == 0) color = true_render_wilds_as;
                             input_output.InputOutput.WriteWithColor($"{spacing}│{type}{value}  │ ", color);
                         } Console.WriteLine();
                         foreach (Card card in cards_part){
                             if (card.main_color == -1) break;
                             ParseCard(out color, out value, out type, out code, card, real_main_side, back: '─');
-                            if (render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
+                            if (real_main_side && render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
+                            else if (!real_main_side && render_wilds_as != 0 && card.reverse_color == 0) color = true_render_wilds_as;
                             if (show_codes) input_output.InputOutput.WriteWithColor($"{spacing}╰{code}──╯ ", color);
                             else input_output.InputOutput.WriteWithColor($"{spacing}╰─────╯ ", color);
                         } Console.WriteLine();
@@ -470,7 +482,8 @@ namespace uno_flip{
                         foreach (Card card in cards_part){
                             if (card.main_color == -1) break;
                             ParseCard(out color, out value, out type, out code, card, !real_main_side, back: '─');
-                            if (render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
+                            if (real_main_side && render_wilds_as != 0 && card.reverse_color == 0) color = true_render_wilds_as;
+                            else if (!real_main_side && render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
                             input_output.InputOutput.WriteWithColor($"{spacing}╭{type}{value}╮ ", color);
                         } Console.WriteLine();
                     }
@@ -479,31 +492,36 @@ namespace uno_flip{
                         foreach (Card card in cards_part){
                             if (card.main_color == -1) break;
                             ParseCard(out color, out value, out type, out code, card, real_main_side);
-                            if (render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
+                            if (real_main_side && render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
+                            else if (!real_main_side && render_wilds_as != 0 && card.reverse_color == 0) color = true_render_wilds_as;
                             input_output.InputOutput.WriteWithColor($"{spacing}╭───╮ ", color);
                         } Console.WriteLine();
                         foreach (Card card in cards_part){
                             if (card.main_color == -1) break;
                             ParseCard(out color, out value, out type, out code, card, real_main_side);
-                            if (render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
+                            if (real_main_side && render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
+                            else if (!real_main_side && render_wilds_as != 0 && card.reverse_color == 0) color = true_render_wilds_as;
                             input_output.InputOutput.WriteWithColor($"{spacing}│{type}  │ ", color);
                         } Console.WriteLine();
                         foreach (Card card in cards_part){
                             if (card.main_color == -1) break;
                             ParseCard(out color, out value, out type, out code, card, real_main_side);
-                            if (render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
+                            if (real_main_side && render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
+                            else if (!real_main_side && render_wilds_as != 0 && card.reverse_color == 0) color = true_render_wilds_as;
                             input_output.InputOutput.WriteWithColor($"{spacing}│{value} │ ", color);
                         } Console.WriteLine();
                         foreach (Card card in cards_part){
                             if (card.main_color == -1) break;
                             ParseCard(out color, out value, out type, out code, card, real_main_side);
-                            if (render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
+                            if (real_main_side && render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
+                            else if (!real_main_side && render_wilds_as != 0 && card.reverse_color == 0) color = true_render_wilds_as;
                             input_output.InputOutput.WriteWithColor($"{spacing}│  {type}│ ", color);
                         } Console.WriteLine();
                         foreach (Card card in cards_part){
                             if (card.main_color == -1) break;
                             ParseCard(out color, out value, out type, out code, card, real_main_side, back: '─');
-                            if (render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
+                            if (real_main_side && render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
+                            else if (!real_main_side && render_wilds_as != 0 && card.reverse_color == 0) color = true_render_wilds_as;
                             if (show_codes) input_output.InputOutput.WriteWithColor($"{spacing}╰{code}╯ ", color);
                             else input_output.InputOutput.WriteWithColor($"{spacing}╰───╯ ", color);
                         } Console.WriteLine();
@@ -511,19 +529,22 @@ namespace uno_flip{
                         foreach (Card card in cards_part){
                             if (card.main_color == -1) break;
                             ParseCard(out color, out value, out type, out code, card, real_main_side);
-                            if (render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
+                            if (real_main_side && render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
+                            else if (!real_main_side && render_wilds_as != 0 && card.reverse_color == 0) color = true_render_wilds_as;
                             input_output.InputOutput.WriteWithColor($"{spacing}╭───╮ ", color);
                         } Console.WriteLine();
                         foreach (Card card in cards_part){
                             if (card.main_color == -1) break;
                             ParseCard(out color, out value, out type, out code, card, real_main_side);
-                            if (render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
+                            if (real_main_side && render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
+                            else if (!real_main_side && render_wilds_as != 0 && card.reverse_color == 0) color = true_render_wilds_as;
                             input_output.InputOutput.WriteWithColor($"{spacing}│{type}{value}│ ", color);
                         } Console.WriteLine();
                         foreach (Card card in cards_part){
                             if (card.main_color == -1) break;
                             ParseCard(out color, out value, out type, out code, card, real_main_side, back: '─');
-                            if (render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
+                            if (real_main_side && render_wilds_as != 0 && card.main_color == 0) color = true_render_wilds_as;
+                            else if (!real_main_side && render_wilds_as != 0 && card.reverse_color == 0) color = true_render_wilds_as;
                             if (show_codes) input_output.InputOutput.WriteWithColor($"{spacing}╰{code}╯ ", color);
                             else input_output.InputOutput.WriteWithColor($"{spacing}╰───╯ ", color);
                         } Console.WriteLine();

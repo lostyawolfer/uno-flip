@@ -306,7 +306,8 @@ namespace uno_flip
             Console.CursorVisible = false;
             took_amount = 0;
             if (amount < 0) {
-                do {
+                while ( (GlobalVars.cards[deck[0]].main_color != amount*(-1) && GlobalVars.main_side) ||
+                        (GlobalVars.cards[deck[0]].reverse_color != amount*(-1) &&!GlobalVars.main_side) ) {
                     Console.Clear();
                     SortDeckBot(ref game_opponent_cards);
                     SortDeck(ref game_user_cards);
@@ -325,30 +326,60 @@ namespace uno_flip
                     }
                     Thread.Sleep(250);
 
-                    if (deck.Count == 0) return;
+                    if (deck.Count == 0) {
+                        Console.CursorVisible = true;
+                        return;
+                    }
                     took_amount++;
                     if (to_end) stack.Add(deck[0]);
                     else stack.Insert(0, deck[0]);
                     deck.RemoveAt(0);
-                } while ( (GlobalVars.cards[deck[0]].main_color != amount*(-1) && GlobalVars.main_side) ||
-                        (GlobalVars.cards[deck[0]].reverse_color != amount*(-1) &&!GlobalVars.main_side) );
-                    Console.Clear();
-                    ShowCardSituation(ref game_opponent_cards, ref game_deck, ref game_stack, ref game_user_cards);
-                    input_output.InputOutput.WriteWithColor($"\n\nDrew {took_amount} cards\t", ConsoleColor.Yellow);
-                    if (GlobalVars.main_side) {
-                        if (amount == -1) input_output.InputOutput.WriteWithColor($"Drawing until Red", ConsoleColor.Red);
-                        else if (amount == -2) input_output.InputOutput.WriteWithColor($"Drawing until Yellow", ConsoleColor.Yellow);
-                        else if (amount == -3) input_output.InputOutput.WriteWithColor($"Drawing until Green", ConsoleColor.Green);
-                        else input_output.InputOutput.WriteWithColor($"Drawing until Blue", ConsoleColor.Blue);
-                    } else {
-                        if (amount == -1) input_output.InputOutput.WriteWithColor($"Drawing until Cyan", ConsoleColor.DarkCyan);
-                        else if (amount == -2) input_output.InputOutput.WriteWithColor($"Drawing until Purple", ConsoleColor.DarkMagenta);
-                        else if (amount == -3) input_output.InputOutput.WriteWithColor($"Drawing until Magenta", ConsoleColor.Magenta);
-                        else input_output.InputOutput.WriteWithColor($"Drawing until Orange", ConsoleColor.DarkYellow);
-                    }
-                    Thread.Sleep(250);
+                }
 
-                    //PlayCard(ref stack, ref deck, ref skip, stack.Last(), ref );
+                Console.Clear();
+                SortDeckBot(ref game_opponent_cards);
+                SortDeck(ref game_user_cards);
+                ShowCardSituation(ref game_opponent_cards, ref game_deck, ref game_stack, ref game_user_cards);
+                input_output.InputOutput.WriteWithColor($"\n\nDrew {took_amount} cards\t", ConsoleColor.Yellow);
+                if (GlobalVars.main_side) {
+                    if (amount == -1) input_output.InputOutput.WriteWithColor($"Drawing until Red", ConsoleColor.Red);
+                    else if (amount == -2) input_output.InputOutput.WriteWithColor($"Drawing until Yellow", ConsoleColor.Yellow);
+                    else if (amount == -3) input_output.InputOutput.WriteWithColor($"Drawing until Green", ConsoleColor.Green);
+                    else input_output.InputOutput.WriteWithColor($"Drawing until Blue", ConsoleColor.Blue);
+                } else {
+                    if (amount == -1) input_output.InputOutput.WriteWithColor($"Drawing until Cyan", ConsoleColor.DarkCyan);
+                    else if (amount == -2) input_output.InputOutput.WriteWithColor($"Drawing until Purple", ConsoleColor.DarkMagenta);
+                    else if (amount == -3) input_output.InputOutput.WriteWithColor($"Drawing until Magenta", ConsoleColor.Magenta);
+                    else input_output.InputOutput.WriteWithColor($"Drawing until Orange", ConsoleColor.DarkYellow);
+                }
+                Thread.Sleep(250);
+
+                if (deck.Count == 0) {
+                    Console.CursorVisible = true;
+                    return;
+                }
+                took_amount++;
+                if (to_end) stack.Add(deck[0]);
+                else stack.Insert(0, deck[0]);
+                deck.RemoveAt(0);
+
+                Console.Clear();
+                SortDeckBot(ref game_opponent_cards);
+                SortDeck(ref game_user_cards);
+                ShowCardSituation(ref game_opponent_cards, ref game_deck, ref game_stack, ref game_user_cards);
+                input_output.InputOutput.WriteWithColor($"\n\nDrew {took_amount} cards\t", ConsoleColor.Yellow);
+                if (GlobalVars.main_side) {
+                    if (amount == -1) input_output.InputOutput.WriteWithColor($"Drawing until Red", ConsoleColor.Red);
+                    else if (amount == -2) input_output.InputOutput.WriteWithColor($"Drawing until Yellow", ConsoleColor.Yellow);
+                    else if (amount == -3) input_output.InputOutput.WriteWithColor($"Drawing until Green", ConsoleColor.Green);
+                    else input_output.InputOutput.WriteWithColor($"Drawing until Blue", ConsoleColor.Blue);
+                } else {
+                    if (amount == -1) input_output.InputOutput.WriteWithColor($"Drawing until Cyan", ConsoleColor.DarkCyan);
+                    else if (amount == -2) input_output.InputOutput.WriteWithColor($"Drawing until Purple", ConsoleColor.DarkMagenta);
+                    else if (amount == -3) input_output.InputOutput.WriteWithColor($"Drawing until Magenta", ConsoleColor.Magenta);
+                    else input_output.InputOutput.WriteWithColor($"Drawing until Orange", ConsoleColor.DarkYellow);
+                }
+                Thread.Sleep(250);
 
                 Console.CursorVisible = true;
                 return;
@@ -394,7 +425,7 @@ namespace uno_flip
             if (( GlobalVars.main_side && GlobalVars.cards[card].main_value == 1 && GlobalVars.cards[card].main_color == 0) ||
                 (!GlobalVars.main_side && GlobalVars.cards[card].reverse_value == 1 && GlobalVars.cards[card].reverse_color == 0)) {
                     if (GlobalVars.main_side) draw_chain += 2;
-                    else draw_chain = -1;
+                    else draw_chain = GlobalVars.last_played_wild_color * -1;
                 }
         }
 
@@ -482,29 +513,79 @@ namespace uno_flip
         public static bool ValidateMove(string input, ref List<int> cards, ref List<int> stack, ref List<int> deck, ref List<int> game_user_cards, ref List<int> game_opponent_cards, ref List<int> game_deck, ref List<int> game_stack, ref bool skip, ref int draw_chain, out string info){
             info = "";
             input = input.Trim().ToLower();
-            string no_uno_input = input.EndsWith('!') ? input[..^1] : input;
 
-            // debug stuff
+            int wild_color = 0;
+            string filtered_input = input.EndsWith('!') ? input[..^1] : input;
+
+
+
+            // debug stuff (or cheats if you want to call them that)
             if (input == "/flip") {
                 GlobalVars.main_side =!GlobalVars.main_side;
                 info = "Flipped";
                 return false;
-            }
-
-            if (input.StartsWith("/draw ")) {
-                string numberPart = input.Substring(6);
-                int draw_count = int.TryParse(numberPart, out draw_count)? draw_count : 1;
+            } else if (input.StartsWith("/draw ")) {
+                string numberPart = input[6..];
+                int draw_count = int.TryParse(numberPart, out draw_count) ? draw_count : 1;
                 DrawCards(ref deck, ref cards, ref game_user_cards, ref game_opponent_cards, ref game_deck, ref game_stack, out _, false, draw_count);
                 info = $"Drew {draw_count}";
                 return false;
-            }
-
-            if (input.StartsWith("/drawbot ")) {
-                string numberPart = input.Substring(9);
-                int draw_count = int.TryParse(numberPart, out draw_count)? draw_count : 1;
+            } else if (input.StartsWith("/drawbot ")) {
+                string numberPart = input[9..];
+                int draw_count = int.TryParse(numberPart, out draw_count) ? draw_count : 1;
                 DrawCards(ref deck, ref game_opponent_cards, ref game_user_cards, ref game_opponent_cards, ref game_deck, ref game_stack, out _, false, draw_count);
                 info = $"Drew {draw_count}";
                 return false;
+            } else if (input.StartsWith("/stack ")) {
+                string numberPart = input[7..];
+                draw_chain = int.TryParse(numberPart, out draw_chain) ? draw_chain : 1;
+                info = $"chain: {draw_chain}";
+                return false;
+            } else if (input.StartsWith("/force ")) {
+                input = input[7..];
+                if (filtered_input.StartsWith('w')) {
+                    if (GlobalVars.main_side) {
+                        if (filtered_input[^1] == 'r') wild_color = 1;
+                        else if (filtered_input[^1] == 'y') wild_color = 2;
+                        else if (filtered_input[^1] == 'g') wild_color = 3;
+                        else if (filtered_input[^1] == 'b') wild_color = 4;
+                    } else {
+                        if (filtered_input[^1] == 'c') wild_color = 1;
+                        else if (filtered_input[^1] == 'p') wild_color = 2;
+                        else if (filtered_input[^1] == 'm') wild_color = 3;
+                        else if (filtered_input[^1] == 'o') wild_color = 4;
+                    }
+                    filtered_input = filtered_input[..^1];
+                }
+                foreach (int card in cards) {
+                    if ((filtered_input == $"{GlobalVars.cards[card].main_code}" && GlobalVars.main_side) ||
+                        (filtered_input == $"{GlobalVars.cards[card].reverse_code}" && !GlobalVars.main_side)) {
+                        if (filtered_input.StartsWith('w')) {
+                            GlobalVars.last_played_wild_color = wild_color;
+                            PlayCard(ref stack, ref cards, ref skip, card, ref draw_chain);
+                        }
+                    }
+                }
+                info = $"You: {input}";
+                return true;
+            }
+            // end debug stuff
+
+
+
+            if (filtered_input.StartsWith('w')) {
+                if (GlobalVars.main_side) {
+                    if (filtered_input[^1] == 'r') wild_color = 1;
+                    else if (filtered_input[^1] == 'y') wild_color = 2;
+                    else if (filtered_input[^1] == 'g') wild_color = 3;
+                    else if (filtered_input[^1] == 'b') wild_color = 4;
+                } else {
+                    if (filtered_input[^1] == 'c') wild_color = 1;
+                    else if (filtered_input[^1] == 'p') wild_color = 2;
+                    else if (filtered_input[^1] == 'm') wild_color = 3;
+                    else if (filtered_input[^1] == 'o') wild_color = 4;
+                }
+                filtered_input = filtered_input[..^1];
             }
 
 
@@ -522,13 +603,23 @@ namespace uno_flip
         
             foreach (int card in cards) {
                 if (draw_chain == 0) {
-                    if ((no_uno_input == $"{GlobalVars.cards[card].main_code}" && GlobalVars.main_side) || (no_uno_input == $"{GlobalVars.cards[card].reverse_code}" && !GlobalVars.main_side)) {
+                    if ((filtered_input == $"{GlobalVars.cards[card].main_code}" && GlobalVars.main_side) || (filtered_input == $"{GlobalVars.cards[card].reverse_code}" && !GlobalVars.main_side)) {
                         if ((GlobalVars.main_side &&
-                                (GlobalVars.cards[card].main_color == GlobalVars.cards[stack.Last()].main_color || GlobalVars.cards[card].main_color == 0 || GlobalVars.cards[stack.Last()].main_color == 0 || GlobalVars.cards[card].main_value == GlobalVars.cards[stack.Last()].main_value)) ||
-
+                                (GlobalVars.cards[card].main_color == GlobalVars.cards[stack.Last()].main_color ||
+                                 GlobalVars.cards[card].main_color == 0 ||
+                                 (GlobalVars.cards[stack.Last()].main_color == 0 && GlobalVars.cards[card].main_color == GlobalVars.last_played_wild_color) ||
+                                 (GlobalVars.cards[card].main_value == GlobalVars.cards[stack.Last()].main_value && GlobalVars.cards[stack[0]].main_color != 0)))
+                              ||
                             (!GlobalVars.main_side &&
-                                (GlobalVars.cards[card].reverse_color == GlobalVars.cards[stack[0]].reverse_color || GlobalVars.cards[card].reverse_color == 0 || GlobalVars.cards[stack[0]].reverse_color == 0 || GlobalVars.cards[card].reverse_value == GlobalVars.cards[stack[0]].reverse_value))) {
+                                (GlobalVars.cards[card].reverse_color == GlobalVars.cards[stack[0]].reverse_color ||
+                                 GlobalVars.cards[card].reverse_color == 0 ||
+                                 (GlobalVars.cards[stack[0]].reverse_color == 0 && GlobalVars.cards[card].reverse_color == GlobalVars.last_played_wild_color) ||
+                                 (GlobalVars.cards[card].reverse_value == GlobalVars.cards[stack[0]].reverse_value && GlobalVars.cards[stack[0]].reverse_color != 0)))
+                            ) {
 
+                            if (filtered_input.StartsWith('w')) {
+                                GlobalVars.last_played_wild_color = wild_color;
+                            }
 
                             PlayCard(ref stack, ref cards, ref skip, card, ref draw_chain);
                             info = $"You: {input}";
@@ -538,7 +629,7 @@ namespace uno_flip
                                     DrawCards(ref deck, ref cards, ref game_user_cards, ref game_opponent_cards, ref game_deck, ref game_stack, out _);
                                     info = $"You: {input}\t\tDrew 2 cards (no UNO when you have only 1 card)";
                                 } else {
-                                    info = $"You: {input}\t\tUNO!";
+                                    info = $"You: {input}";
                                 }
                             } else {
                                 if (input.EndsWith('!')){
@@ -556,18 +647,22 @@ namespace uno_flip
                         return false;
                     }
                 } else if (draw_chain > 0) {
-                    if ((no_uno_input == $"{GlobalVars.cards[card].main_code}" && GlobalVars.main_side) || (no_uno_input == $"{GlobalVars.cards[card].reverse_code}" && !GlobalVars.main_side)) {
-                        if ((GlobalVars.main_side &&
+                    if ((filtered_input == $"{GlobalVars.cards[card].main_code}" && GlobalVars.main_side) || (filtered_input == $"{GlobalVars.cards[card].reverse_code}" && !GlobalVars.main_side)) {
+                        if (( GlobalVars.main_side &&
                                 GlobalVars.cards[card].main_value == -3) ||
 
                             (!GlobalVars.main_side &&
                                 GlobalVars.cards[card].reverse_value == -3) ||
 
-                            (!GlobalVars.main_side &&
-                                GlobalVars.cards[card].main_value == 1 && GlobalVars.cards[card].main_value == 0) ||
+                            ( GlobalVars.main_side &&
+                                GlobalVars.cards[card].main_value == 1 && GlobalVars.cards[card].main_color == 0) ||
 
                             (!GlobalVars.main_side &&
-                                GlobalVars.cards[card].reverse_value == 1 && GlobalVars.cards[card].reverse_value == 0)) {
+                                GlobalVars.cards[card].reverse_value == 1 && GlobalVars.cards[card].reverse_color == 0)) {
+                            
+                            if (filtered_input.StartsWith('w')) {
+                                GlobalVars.last_played_wild_color = wild_color;
+                            }
 
                             PlayCard(ref stack, ref cards, ref skip, card, ref draw_chain);
                             info = $"You: {input}";
@@ -604,48 +699,73 @@ namespace uno_flip
         public static string BotMove(ref List<int> cards, ref List<int> stack, ref List<int> deck, ref List<int> game_user_cards, ref List<int> game_opponent_cards, ref List<int> game_deck, ref List<int> game_stack, ref bool skip, ref int draw_chain) {
             if (draw_chain == 0) {
                 foreach (int card in cards) {
-                    if (GlobalVars.main_side) {
-                        if (GlobalVars.cards[card].main_color == GlobalVars.cards[stack.Last()].main_color || GlobalVars.cards[card].main_value == GlobalVars.cards[stack.Last()].main_value) {
-                            PlayCard(ref stack, ref cards, ref skip, card, ref draw_chain);
-                            if (cards.Count > 1) return $"{GlobalVars.cards[card].main_code}";
-                            else if (cards.Count == 1) return $"{GlobalVars.cards[card].main_code}!\tUNO!";
-                            else return $"{GlobalVars.cards[card].main_code}\tYou lose!";
-                        }
-                    } else {
-                        if (GlobalVars.cards[card].reverse_color == GlobalVars.cards[stack[0]].reverse_color || GlobalVars.cards[card].reverse_value == GlobalVars.cards[stack[0]].reverse_value) {
-                            PlayCard(ref stack, ref cards, ref skip, card, ref draw_chain);
-                            if (cards.Count > 1) return $"{GlobalVars.cards[card].reverse_code}";
-                            else if (cards.Count == 1) return $"{GlobalVars.cards[card].reverse_code}!\tUNO!";
-                            else return $"{GlobalVars.cards[card].reverse_code}\tYou lose!";
-                        }
-                    }
-                }
+                    if ((GlobalVars.main_side &&
+                                (GlobalVars.cards[card].main_color == GlobalVars.cards[stack.Last()].main_color ||
+                                 GlobalVars.cards[card].main_color == 0 ||
+                                 (GlobalVars.cards[stack.Last()].main_color == 0 && GlobalVars.cards[card].main_color == GlobalVars.last_played_wild_color) ||
+                                 (GlobalVars.cards[card].main_value == GlobalVars.cards[stack.Last()].main_value && GlobalVars.cards[stack[0]].main_color != 0))) ||
 
-                foreach (int card in cards) {
-                    if ((GlobalVars.main_side && GlobalVars.cards[card].main_color == 0) || (!GlobalVars.main_side && GlobalVars.cards[card].reverse_color == 0)) {
+                            (!GlobalVars.main_side &&
+                                (GlobalVars.cards[card].reverse_color == GlobalVars.cards[stack[0]].reverse_color ||
+                                 GlobalVars.cards[card].reverse_color == 0 ||
+                                 (GlobalVars.cards[stack[0]].reverse_color == 0 && GlobalVars.cards[card].main_color == GlobalVars.last_played_wild_color) ||
+                                 (GlobalVars.cards[card].reverse_value == GlobalVars.cards[stack[0]].reverse_value && GlobalVars.cards[stack[0]].reverse_color != 0)))
+                        ) {
+                        GlobalVars.last_played_wild_color = GlobalVars.main_side ? GlobalVars.cards[cards[0]].main_color : GlobalVars.cards[cards[0]].reverse_color;
+
+
                         PlayCard(ref stack, ref cards, ref skip, card, ref draw_chain);
-                        if (GlobalVars.main_side) {
-                            if (cards.Count > 1) return $"{GlobalVars.cards[card].main_code}";
-                            else if (cards.Count == 1) return $"{GlobalVars.cards[card].main_code}!\tUNO!";
-                            else return $"{GlobalVars.cards[card].main_code}\tYou lose!";
-                        } else {
-                            if (cards.Count > 1) return $"{GlobalVars.cards[card].reverse_code}";
-                            else if (cards.Count == 1) return $"{GlobalVars.cards[card].reverse_code}!\tUNO!";
-                            else return $"{GlobalVars.cards[card].reverse_code}\tYou lose!";
+                        string card_code = GlobalVars.main_side ? GlobalVars.cards[card].main_code : GlobalVars.cards[card].reverse_code;
+
+                        if (card_code.StartsWith('w')) {
+                            if (GlobalVars.main_side) {
+                                if (GlobalVars.last_played_wild_color == 1) card_code += "r";
+                                else if (GlobalVars.last_played_wild_color == 2) card_code += "y";
+                                else if (GlobalVars.last_played_wild_color == 3) card_code += "g";
+                                else if (GlobalVars.last_played_wild_color == 4) card_code += "b";
+                            } else {
+                                if (GlobalVars.last_played_wild_color == 1) card_code += "c";
+                                else if (GlobalVars.last_played_wild_color == 2) card_code += "p";
+                                else if (GlobalVars.last_played_wild_color == 3) card_code += "m";
+                                else if (GlobalVars.last_played_wild_color == 4) card_code += "o";
+                            }
                         }
+                        
+                        if (cards.Count > 1) return $"{card_code}";
+                        else if (cards.Count == 1) return $"{card_code}!";
+                        else return $"{card_code}\tYou lose!";
                     }
                 }
+                
             } else if (draw_chain > 0) {
                 foreach (int card in cards) {
                     if (GlobalVars.main_side) {
-                        if (GlobalVars.cards[card].main_value == -3) {
+                        if (GlobalVars.cards[card].main_value == -3 ||
+                            (GlobalVars.cards[card].main_color == 0 && GlobalVars.cards[card].main_value == 1)
+                            ) {
                             PlayCard(ref stack, ref cards, ref skip, card, ref draw_chain);
-                            return $"{GlobalVars.cards[card].main_code}";
+                            string card_code = GlobalVars.cards[card].main_code;
+                            if (card_code.StartsWith('w')) {
+                                if (GlobalVars.last_played_wild_color == 1) card_code += "r";
+                                else if (GlobalVars.last_played_wild_color == 2) card_code += "y";
+                                else if (GlobalVars.last_played_wild_color == 3) card_code += "g";
+                                else if (GlobalVars.last_played_wild_color == 4) card_code += "b";
+                            }
+                            return $"{card_code}";
                         }
                     } else {
-                        if (GlobalVars.cards[card].reverse_value == -3) {
+                        if (GlobalVars.cards[card].reverse_value == -3 ||
+                            (GlobalVars.cards[card].reverse_color == 0 && GlobalVars.cards[card].reverse_value == 1)
+                            ) {
                             PlayCard(ref stack, ref cards, ref skip, card, ref draw_chain);
-                            return $"{GlobalVars.cards[card].reverse_code}";
+                            string card_code = GlobalVars.cards[card].reverse_code;
+                            if (card_code.StartsWith('w')) {
+                                if (GlobalVars.last_played_wild_color == 1) card_code += "c";
+                                else if (GlobalVars.last_played_wild_color == 2) card_code += "p";
+                                else if (GlobalVars.last_played_wild_color == 3) card_code += "m";
+                                else if (GlobalVars.last_played_wild_color == 4) card_code += "o";
+                            }
+                            return $"{card_code}";
                         }
                     }
                 }
