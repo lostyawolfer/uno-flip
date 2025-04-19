@@ -719,7 +719,7 @@ namespace uno_flip
                             (!GlobalVars.main_side &&
                                 (GlobalVars.cards[card].reverse_color == GlobalVars.cards[stack[0]].reverse_color ||
                                  GlobalVars.cards[card].reverse_color == 0 ||
-                                 (GlobalVars.cards[stack[0]].reverse_color == 0 && GlobalVars.cards[card].main_color == GlobalVars.last_played_wild_color) ||
+                                 (GlobalVars.cards[stack[0]].reverse_color == 0 && GlobalVars.cards[card].reverse_color == GlobalVars.last_played_wild_color) ||
                                  (GlobalVars.cards[card].reverse_value == GlobalVars.cards[stack[0]].reverse_value && GlobalVars.cards[stack[0]].reverse_color != 0)))
                         ) {
                         GlobalVars.last_played_wild_color = GlobalVars.main_side ? GlobalVars.cards[cards[0]].main_color : GlobalVars.cards[cards[0]].reverse_color;
