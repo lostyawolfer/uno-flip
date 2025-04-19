@@ -144,7 +144,7 @@ namespace uno_flip
             input_output.InputOutput.WriteWithColor("\n\n\tRules of the game", ConsoleColor.Red);
             input_output.InputOutput.WriteWithColor(
                 "\n\tYou have your hand, you have the deck, and you have the stack.\n\tOn your turn, you can put a card from your hand to a stack if the card has the same color or same number/symbol.\n\tIf you don't have a card that fits, you grab 1 card from the deck.\n\tYour task is to get rid of all your cards.\n\tSay 'UNO!' before placing your second to last card to signify you only have 1 left.\n\tIf you don't, you are forced to grab 2 cards from the deck.", ConsoleColor.White);
-            input_output.InputOutput.WriteWithColor("\n\n\tHow to convey things here", ConsoleColor.Red);
+            input_output.InputOutput.WriteWithColor("\n\n\tHow to make moves things here", ConsoleColor.Red);
             input_output.InputOutput.WriteWithColor(
                 "\n\tEvery card has a card code on its bottom left that you can use to signify your move.\n\tType in '#' or nothing and hit enter to grab a card from the deck.\n\tFinish a move by '!' to shout 'UNO!'.\n\tTo set a color on a wild card, add a color code after the card code.\n\t\tr for Red, y - Yellow, g - Green, b - Blue;\n\t\tc - Cyan, p - Purple, m - Magenta, o - Orange.", ConsoleColor.White);
             input_output.InputOutput.WriteWithColor(

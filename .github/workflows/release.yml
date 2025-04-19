@@ -28,6 +28,5 @@ jobs:
           files: |
             releases/uno-flip-linux
             releases/uno-flip.exe
-          body_path: RELEASE_NOTES.md
-          #draft: true    # mark as draft to make reviewable before made available
+          draft: true    # mark as draft to make reviewable before made available
           make_latest: true
