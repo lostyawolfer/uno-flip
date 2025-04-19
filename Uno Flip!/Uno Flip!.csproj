@@ -10,6 +10,9 @@
     <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>true</SelfContained>
     <PublishTrimmed>true</PublishTrimmed>
+    <PublishDir>/home/lostya/projects/school/c#/uno-flip/releases</PublishDir>
+    <DebugType Condition="'$(Configuration)'=='Release'">none</DebugType>
+    <DebugType Condition="'$(Configuration)'=='Debug'">portable</DebugType>
   </PropertyGroup>
 
 </Project>
