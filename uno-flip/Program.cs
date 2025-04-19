@@ -137,6 +137,9 @@ namespace uno_flip
     {
         static void Main()
         {   
+            Console.InputEncoding = System.Text.Encoding.UTF8;
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+            
             bool win = false;
             Console.CursorVisible = false;
             Console.Clear();
