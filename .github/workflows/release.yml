@@ -5,6 +5,9 @@ on:
       - "v*"
 
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -20,6 +23,7 @@ jobs:
 
       - name: Build
         run: make build
+    
 
       - name: Release
         uses: softprops/action-gh-release@v2
