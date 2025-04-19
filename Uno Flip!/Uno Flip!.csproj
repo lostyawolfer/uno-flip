@@ -3,9 +3,13 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
+    <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
     <RootNamespace>uno_flip</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <PublishTrimmed>true</PublishTrimmed>
   </PropertyGroup>
 
 </Project>
