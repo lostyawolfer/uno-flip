@@ -290,7 +290,7 @@ namespace uno_flip
                     if (draw_chain >= 0) input = Console.ReadLine();
                     else {
                         input = "#";
-                        Thread.Sleep(1000);
+                        Thread.Sleep(2000);
                     } 
                     last_move = ValidateMove(input, ref user_cards, ref stack, ref deck, ref user_cards, ref opponent_cards, ref deck, ref stack, ref bot_skip, ref draw_chain, out info);
                 }
@@ -492,6 +492,8 @@ namespace uno_flip
             Console.WriteLine();
             if (Console.WindowHeight > 40) Console.WriteLine();
 
+            if (deck.Count == 0) ShuffleDeck(ref deck);
+
             if (deck.Count > 0) InputOutput.PrintCards(InputOutput.GetCards(deck[0]), main_side: !GlobalVars.main_side, show_other_side: false, compact: true, small: false, spacing: "     ");
             else input_output.InputOutput.WriteWithColor("     ╭─────╮\n     │EMPTY│\n     ╰─────╯\n", ConsoleColor.DarkGray);
 
@@ -541,34 +543,35 @@ namespace uno_flip
                 draw_chain = int.TryParse(numberPart, out draw_chain) ? draw_chain : 1;
                 info = $"chain: {draw_chain}";
                 return false;
-            } else if (input.StartsWith("/force ")) {
-                input = input[7..];
-                if (filtered_input.StartsWith('w')) {
-                    if (GlobalVars.main_side) {
-                        if (filtered_input[^1] == 'r') wild_color = 1;
-                        else if (filtered_input[^1] == 'y') wild_color = 2;
-                        else if (filtered_input[^1] == 'g') wild_color = 3;
-                        else if (filtered_input[^1] == 'b') wild_color = 4;
-                    } else {
-                        if (filtered_input[^1] == 'c') wild_color = 1;
-                        else if (filtered_input[^1] == 'p') wild_color = 2;
-                        else if (filtered_input[^1] == 'm') wild_color = 3;
-                        else if (filtered_input[^1] == 'o') wild_color = 4;
-                    }
-                    filtered_input = filtered_input[..^1];
-                }
-                foreach (int card in cards) {
-                    if ((filtered_input == $"{GlobalVars.cards[card].main_code}" && GlobalVars.main_side) ||
-                        (filtered_input == $"{GlobalVars.cards[card].reverse_code}" && !GlobalVars.main_side)) {
-                        if (filtered_input.StartsWith('w')) {
-                            GlobalVars.last_played_wild_color = wild_color;
-                            PlayCard(ref stack, ref cards, ref skip, card, ref draw_chain);
-                        }
-                    }
-                }
-                info = $"You: {input}";
-                return true;
             }
+            // else if (input.StartsWith("/force ")) {
+            //     input = input[7..];
+            //     if (filtered_input.StartsWith('w')) {
+            //         if (GlobalVars.main_side) {
+            //             if (filtered_input[^1] == 'r') wild_color = 1;
+            //             else if (filtered_input[^1] == 'y') wild_color = 2;
+            //             else if (filtered_input[^1] == 'g') wild_color = 3;
+            //             else if (filtered_input[^1] == 'b') wild_color = 4;
+            //         } else {
+            //             if (filtered_input[^1] == 'c') wild_color = 1;
+            //             else if (filtered_input[^1] == 'p') wild_color = 2;
+            //             else if (filtered_input[^1] == 'm') wild_color = 3;
+            //             else if (filtered_input[^1] == 'o') wild_color = 4;
+            //         }
+            //         filtered_input = filtered_input[..^1];
+            //     }
+            //     foreach (int card in cards) {
+            //         if ((filtered_input == $"{GlobalVars.cards[card].main_code}" && GlobalVars.main_side) ||
+            //             (filtered_input == $"{GlobalVars.cards[card].reverse_code}" && !GlobalVars.main_side)) {
+            //             if (filtered_input.StartsWith('w')) {
+            //                 GlobalVars.last_played_wild_color = wild_color;
+            //                 PlayCard(ref stack, ref cards, ref skip, card, ref draw_chain);
+            //             }
+            //         }
+            //     }
+            //     info = $"You: {input}";
+            //     return true;
+            // }
             // end debug stuff
 
 
@@ -579,11 +582,19 @@ namespace uno_flip
                     else if (filtered_input[^1] == 'y') wild_color = 2;
                     else if (filtered_input[^1] == 'g') wild_color = 3;
                     else if (filtered_input[^1] == 'b') wild_color = 4;
+                    else {
+                        info = "Please set a color for wild card after its code (r, y, g, b)";
+                        return false;
+                    }
                 } else {
                     if (filtered_input[^1] == 'c') wild_color = 1;
                     else if (filtered_input[^1] == 'p') wild_color = 2;
                     else if (filtered_input[^1] == 'm') wild_color = 3;
                     else if (filtered_input[^1] == 'o') wild_color = 4;
+                    else {
+                        info = "Please set a color for wild card after its code (c, p, m, o)";
+                        return false;
+                    }
                 }
                 filtered_input = filtered_input[..^1];
             }
@@ -743,6 +754,7 @@ namespace uno_flip
                         if (GlobalVars.cards[card].main_value == -3 ||
                             (GlobalVars.cards[card].main_color == 0 && GlobalVars.cards[card].main_value == 1)
                             ) {
+                            GlobalVars.last_played_wild_color = GlobalVars.main_side ? GlobalVars.cards[cards[0]].main_color : GlobalVars.cards[cards[0]].reverse_color;
                             PlayCard(ref stack, ref cards, ref skip, card, ref draw_chain);
                             string card_code = GlobalVars.cards[card].main_code;
                             if (card_code.StartsWith('w')) {
