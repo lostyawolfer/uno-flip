@@ -528,7 +528,7 @@ namespace uno_flip{
 
 
 
-        public static void ShowCardSituation(List<int> opponent_cards, ref List<int> deck, ref List<int> stack, ref List<int> user_cards, int chain_length = 0){
+        public static void ShowScreen(List<int> opponent_cards, ref List<int> deck, ref List<int> stack, ref List<int> user_cards, int chain_length = 0){
             Console.Clear();
 
 
