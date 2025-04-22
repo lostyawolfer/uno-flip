@@ -334,7 +334,7 @@ namespace uno_flip{
                 if (!small) {
                     if (show_other_side) input_output.InputOutput.WriteWithColor($"{spacing}╭─────╮\n{spacing}│     │\n", ConsoleColor.DarkGray);
                     if (compact) input_output.InputOutput.WriteWithColor($"{spacing}╭─────╮\n{spacing}│EMPTY│\n{spacing}╰─────╯\n", ConsoleColor.DarkGray);
-                    else input_output.InputOutput.WriteWithColor($"{spacing}╭─────╮\n{spacing}│     │\n{spacing}│     │\n{spacing}│EMPTY│\n{spacing}│     │\n{spacing}│     │\n{spacing}╰─────╯\n", ConsoleColor.DarkGray);
+                    else input_output.InputOutput.WriteWithColor($"{spacing}╭─────╮\n{spacing}│    /│\n{spacing}│   / │\n{spacing}│  /  │\n{spacing}│ /   │\n{spacing}│/    │\n{spacing}╰─────╯\n", ConsoleColor.DarkGray);
                 } else {
                     if (show_other_side) input_output.InputOutput.WriteWithColor($"{spacing}╭───╮\n", ConsoleColor.DarkGray);
                     if (compact) input_output.InputOutput.WriteWithColor($"{spacing}╭───╮\n{spacing}│ / │\n{spacing}╰───╯\n", ConsoleColor.DarkGray);
@@ -529,14 +529,30 @@ namespace uno_flip{
 
 
         public static void ShowCardSituation(List<int> opponent_cards, ref List<int> deck, ref List<int> stack, ref List<int> user_cards, int chain_length = 0){
+            Console.Clear();
+
+
             PrintCards(GetCards(opponent_cards), main_side: !GlobalVars.main_side, show_other_side: false, compact: false, small: true);
             input_output.InputOutput.WriteWithColor($"cards: {opponent_cards.Count}\n", ConsoleColor.DarkGray);
             Console.WriteLine();
             Console.WriteLine();
             if (Console.WindowHeight > 40) Console.WriteLine();
 
-            if (GlobalVars.main_side) PrintCards(GetCards(stack.Last()), main_side: GlobalVars.main_side, show_other_side: false, compact: false, small: false, spacing: "     ", render_wilds_as: GlobalVars.last_played_wild_color);
-            else PrintCards(GetCards(stack[0]), main_side: GlobalVars.main_side, show_other_side: false, compact: false, small: false, spacing: "     ", render_wilds_as: GlobalVars.last_played_wild_color);
+
+            Card[] empty_stack = [];
+
+            try {
+                PrintCards(GetCards(deck[0]), main_side: !GlobalVars.main_side, show_other_side: false, compact: true, small: false, spacing: "     ");
+            } catch {
+                PrintCards(empty_stack, main_side: !GlobalVars.main_side, show_other_side: false, compact: true, small: false, spacing: "     ");
+            }
+
+            try {
+                if (GlobalVars.main_side) PrintCards(GetCards(stack.Last()), main_side: GlobalVars.main_side, show_other_side: false, compact: false, small: false, spacing: "     ", render_wilds_as:GlobalVars.last_played_wild_color);
+                else PrintCards(GetCards(stack[0]), main_side: GlobalVars.main_side, show_other_side: false, compact: false, small: false, spacing: "     ", render_wilds_as:GlobalVars.last_played_wild_color);
+            } catch {
+                PrintCards(empty_stack, main_side: GlobalVars.main_side, show_other_side: false, compact: false, small: false, spacing: "     ", render_wilds_as:GlobalVars.last_played_wild_color);
+            }
 
             if (Console.WindowHeight > 40) Console.WriteLine();
             Console.WriteLine();

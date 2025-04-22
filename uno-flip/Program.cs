@@ -182,27 +182,27 @@ namespace uno_flip
             List<int> opponent_cards = new List<int>();
             List<int> stack = new List<int>();
 
-            DrawCards(ref deck, ref stack, ref user_cards, ref opponent_cards, ref deck, ref stack, out _);
-            while (stack.Last() < 7){
-                deck.Add(stack[0]);
-                stack.RemoveAt(0);
-                DrawCards(ref deck, ref stack, ref user_cards, ref opponent_cards, ref deck, ref stack, out _);
-            }
-
             Console.CursorVisible = false;
-            for (int i = 0; i < 3; i++){
+            for (int i = 0; i < 7; i++){
                 DrawCards(ref deck, ref opponent_cards, ref user_cards, ref opponent_cards, ref deck, ref stack, out _);
                 SortDeckBot(ref opponent_cards);
-                Console.Clear();
                 InputOutput.ShowCardSituation(opponent_cards, ref deck, ref stack, ref user_cards);
                 Thread.Sleep(75);
 
                 DrawCards(ref deck, ref user_cards, ref user_cards, ref opponent_cards, ref deck, ref stack, out _);
                 SortDeck(ref user_cards);
-                Console.Clear();
                 InputOutput.ShowCardSituation(opponent_cards, ref deck, ref stack, ref user_cards);
                 Thread.Sleep(75);
             }
+
+            DrawCards(ref deck, ref stack, ref user_cards, ref opponent_cards, ref deck, ref stack, out _);
+            while (stack.Last() < 7){ // filter the first card to never be a wild
+                deck.Add(stack[0]);
+                stack.RemoveAt(0);
+                DrawCards(ref deck, ref stack, ref user_cards, ref opponent_cards, ref deck, ref stack, out _);
+            }
+            InputOutput.ShowCardSituation(opponent_cards, ref deck, ref stack, ref user_cards);
+
             Console.CursorVisible = true;
             
             // ConsoleKeyInfo keyInfo = new();
@@ -216,11 +216,10 @@ namespace uno_flip
                 // if (info.Contains("win")) return true;
                 // if (bot_played.Contains("lose")) return false;
                 
-                Console.Clear();
 
                 SortDeckBot(ref opponent_cards);
                 SortDeck(ref user_cards);
-               InputOutput.ShowCardSituation(opponent_cards, ref deck, ref stack, ref user_cards, draw_chain);
+                InputOutput.ShowCardSituation(opponent_cards, ref deck, ref stack, ref user_cards, draw_chain);
                 Console.WriteLine();
                 //Console.WriteLine("\n\nwrite a card code (written in its bottom left) to play it\nif it's a wild add a color code at the end to set that color\n\t(r red, y yellow, g green, b blue; c cyan, p purple, m magenta, o orange)\n\"#\" to draw a card\nadd \"!\" at the end to call UNO!\n");
                 
@@ -239,7 +238,7 @@ namespace uno_flip
 
                     SortDeckBot(ref opponent_cards);
                     SortDeck(ref user_cards);
-                   InputOutput.ShowCardSituation(opponent_cards, ref deck, ref stack, ref user_cards, draw_chain);
+                    InputOutput.ShowCardSituation(opponent_cards, ref deck, ref stack, ref user_cards, draw_chain);
                     Console.WriteLine();
 
                     //Console.WriteLine("\n\nwrite a card code (written in its bottom left) to play it\nif it's a wild add a color code at the end to set that color\n\t(r red, y yellow, g green, b blue; c cyan, p purple, m magenta, o orange)\n\"#\" to draw a card\nadd \"!\" at the end to call UNO!\n");
@@ -398,7 +397,7 @@ namespace uno_flip
                 Console.Clear();
                 SortDeckBot(ref game_opponent_cards);
                 SortDeck(ref game_user_cards);
-               InputOutput.ShowCardSituation(game_opponent_cards, ref game_deck, ref game_stack, ref game_user_cards);
+                InputOutput.ShowCardSituation(game_opponent_cards, ref game_deck, ref game_stack, ref game_user_cards);
                 input_output.InputOutput.WriteWithColor($"\n\bDrawing {amount} cards", ConsoleColor.Yellow);
                 if (amount > 1) Thread.Sleep(75);
             }
@@ -414,10 +413,11 @@ namespace uno_flip
                 (!GlobalVars.main_side && (GlobalVars.cards[card].reverse_value == -1 || GlobalVars.cards[card].reverse_value == -2)))
                     skip = true;
             
-
             if (( GlobalVars.main_side && GlobalVars.cards[card].main_value == -4) ||
                 (!GlobalVars.main_side && GlobalVars.cards[card].reverse_value == -4))
+                
                 GlobalVars.main_side = !GlobalVars.main_side;
+            
 
             if (( GlobalVars.main_side && GlobalVars.cards[card].main_value == -3) ||
                 (!GlobalVars.main_side && GlobalVars.cards[card].reverse_value == -3)) {
