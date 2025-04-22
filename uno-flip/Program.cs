@@ -248,43 +248,22 @@ namespace uno_flip
                     if (bot_played.Contains("lose")) return false;
                     if (!player_skip){
                         if (draw_chain <= 0) {
-                            input_output.InputOutput.WriteWithColor($"\nNext move", ConsoleColor.Gray);
+                            input_output.InputOutput.WriteWithColor($"\nNext move ", ConsoleColor.Black, ConsoleColor.White);
+                            input_output.InputOutput.WriteWithColor($" ", ConsoleColor.White); // powerline symbol
                         } else {
-                            input_output.InputOutput.WriteWithColor($"\nchain: {draw_chain}", ConsoleColor.Magenta);
+                            input_output.InputOutput.WriteWithColor($"\nchain: {draw_chain} ", ConsoleColor.Black, ConsoleColor.Magenta);
+                            input_output.InputOutput.WriteWithColor($" ", ConsoleColor.Magenta); // powerline symbol
                         }
-                        input_output.InputOutput.WriteWithColor($" > ", ConsoleColor.DarkGray);
                     } 
                     Console.CursorVisible = true;
                     bot_skip = false;
                 } else {
                     if (bot_played != "") input_output.InputOutput.WriteWithColor($"\nBot: {bot_played}\n", ConsoleColor.Cyan);
                     else Console.Write("\n\n");
-                    input_output.InputOutput.WriteWithColor($"\n{info}", ConsoleColor.Red);
-                    input_output.InputOutput.WriteWithColor($" > ", ConsoleColor.Gray);
+                    input_output.InputOutput.WriteWithColor($"\n{info} ", ConsoleColor.Black, ConsoleColor.Red);
+                    input_output.InputOutput.WriteWithColor($" ", ConsoleColor.Red); // powerline symbol
                 }
-                //Console.WriteLine($"{keyInfo.Key} pressed; it's {keyInfo.KeyChar} char");
 
-                // keyInfo = Console.ReadKey(true);
-
-                // if (keyInfo.Key == ConsoleKey.D1){
-                //     TakeCardFromDeck(ref deck, ref user_cards);
-                // } else if (keyInfo.Key == ConsoleKey.D2){
-                //     TakeCardFromDeck(ref deck, ref opponent_cards);
-                // } else if (keyInfo.Key == ConsoleKey.D0){
-                //     if (GlobalVars.main_side){
-                //         TakeCardFromDeck(ref deck, ref stack);
-                //     } else {
-                //         TakeCardFromDeck(ref deck, ref stack, false);
-                //     }
-                // } else if (keyInfo.Key == ConsoleKey.Spacebar){
-                //     GlobalVars.main_side = !GlobalVars.main_side;
-                // } else if (keyInfo.Key == ConsoleKey.Q){
-                //     Environment.Exit(0);
-                //     //System.Diagnostics.Process.GetCurrentProcess().Kill();
-                // } else if (keyInfo.Key == ConsoleKey.R){
-                //     return;
-                //     //System.Diagnostics.Process.GetCurrentProcess().Kill();
-                // }
                 if (info.Contains("win")) return true;
                 #pragma warning disable CS8604 // Possible null reference argument.
                 string input;
@@ -310,10 +289,9 @@ namespace uno_flip
             if (amount < 0) {
                 while ( (GlobalVars.cards[deck[0]].main_color != amount*(-1) && GlobalVars.main_side) ||
                         (GlobalVars.cards[deck[0]].reverse_color != amount*(-1) &&!GlobalVars.main_side) ) {
-                    Console.Clear();
                     SortDeckBot(ref game_opponent_cards);
                     SortDeck(ref game_user_cards);
-                   InputOutput.ShowScreen(game_opponent_cards, ref game_deck, ref game_stack, ref game_user_cards);
+                    InputOutput.ShowScreen(game_opponent_cards, ref game_deck, ref game_stack, ref game_user_cards);
                     input_output.InputOutput.WriteWithColor($"\n\nDrew {took_amount} cards\t", ConsoleColor.Yellow);
                     if (GlobalVars.main_side) {
                         if (amount == -1) input_output.InputOutput.WriteWithColor($"Drawing until Red", ConsoleColor.Red);
@@ -341,7 +319,7 @@ namespace uno_flip
                 Console.Clear();
                 SortDeckBot(ref game_opponent_cards);
                 SortDeck(ref game_user_cards);
-               InputOutput.ShowScreen(game_opponent_cards, ref game_deck, ref game_stack, ref game_user_cards);
+                InputOutput.ShowScreen(game_opponent_cards, ref game_deck, ref game_stack, ref game_user_cards);
                 input_output.InputOutput.WriteWithColor($"\n\nDrew {took_amount} cards\t", ConsoleColor.Yellow);
                 if (GlobalVars.main_side) {
                     if (amount == -1) input_output.InputOutput.WriteWithColor($"Drawing until Red", ConsoleColor.Red);
