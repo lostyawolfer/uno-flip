@@ -153,7 +153,7 @@ namespace uno_flip
             input_output.InputOutput.WriteWithColor(
                 "\n\n\tYou are going to play against a robot that's supposed to play aggressively.\n\tIt is artificially slowed down so that you can properly percieve each its move.\n\tIt does not actually take your computer that long to get the move done.", ConsoleColor.Cyan);
             input_output.InputOutput.WriteWithColor(
-                "\n\n\tThe only house rule in this game is 'Stacking', meaning if someone gives you a +1 you can +1 them back, for example.\n\tNo 'Challenging' wild plus cards btw.\n\tHave fun!", ConsoleColor.White);
+                "\n\n\tThe only house rule in this game is 'Stacking', meaning if someone gives you a +1 you can +1 them back, for example.\n\tNo 'Challenging' wild plus cards btw.\n\tHave fun!\n\n\tTo exit the app, type \"exit\" during your move.", ConsoleColor.White);
             
             input_output.InputOutput.WriteWithColor("\n\n\n\t\tPress any key to contiune", ConsoleColor.Green);
             Console.ReadKey();
@@ -162,7 +162,9 @@ namespace uno_flip
                 Console.CursorVisible = false;
                 if (win) input_output.InputOutput.WriteWithColor("\n\t\tYou win!", ConsoleColor.Green);
                 else input_output.InputOutput.WriteWithColor("\n\t\tYou lose!", ConsoleColor.Red);
-                Thread.Sleep(5000);
+                input_output.InputOutput.WriteWithColor("\n\t\tPress any key to play again or q to quit", ConsoleColor.Yellow);
+                ConsoleKeyInfo pressed_key = Console.ReadKey();
+                if (pressed_key.Key == ConsoleKey.Q) Environment.Exit(0);
                 Console.CursorVisible = true;
                 GlobalVars.main_side = true;
             }
@@ -171,8 +173,6 @@ namespace uno_flip
 
 
         public static bool Game() {
-            Random random = new Random();
-
             List<int> deck = new List<int>();
             ShuffleDeck(ref deck);
 
@@ -223,6 +223,7 @@ namespace uno_flip
                 Console.WriteLine();
                 //Console.WriteLine("\n\nwrite a card code (written in its bottom left) to play it\nif it's a wild add a color code at the end to set that color\n\t(r red, y yellow, g green, b blue; c cyan, p purple, m magenta, o orange)\n\"#\" to draw a card\nadd \"!\" at the end to call UNO!\n");
                 
+                if (info.Contains("win")) return true;
                 if (last_move) {
                     if (!info.Contains("skipped")) input_output.InputOutput.WriteWithColor($"{info}\n", ConsoleColor.Green);
                     else input_output.InputOutput.WriteWithColor($"{info}\n", ConsoleColor.DarkGreen);
@@ -248,11 +249,9 @@ namespace uno_flip
                     if (bot_played.Contains("lose")) return false;
                     if (!player_skip){
                         if (draw_chain <= 0) {
-                            input_output.InputOutput.WriteWithColor($"\nNext move ", ConsoleColor.Black, ConsoleColor.White);
-                            input_output.InputOutput.WriteWithColor($" ", ConsoleColor.White); // powerline symbol
+                            input_output.InputOutput.WritePowerline($"\nNext move ", ConsoleColor.White);
                         } else {
-                            input_output.InputOutput.WriteWithColor($"\nchain: {draw_chain} ", ConsoleColor.Black, ConsoleColor.Magenta);
-                            input_output.InputOutput.WriteWithColor($" ", ConsoleColor.Magenta); // powerline symbol
+                            input_output.InputOutput.WritePowerline($"\nchain: {draw_chain} ", ConsoleColor.Magenta);
                         }
                     } 
                     Console.CursorVisible = true;
@@ -260,8 +259,7 @@ namespace uno_flip
                 } else {
                     if (bot_played != "") input_output.InputOutput.WriteWithColor($"\nBot: {bot_played}\n", ConsoleColor.Cyan);
                     else Console.Write("\n\n");
-                    input_output.InputOutput.WriteWithColor($"\n{info} ", ConsoleColor.Black, ConsoleColor.Red);
-                    input_output.InputOutput.WriteWithColor($" ", ConsoleColor.Red); // powerline symbol
+                    input_output.InputOutput.WritePowerline($"\n{info} ", ConsoleColor.Red);
                 }
 
                 if (info.Contains("win")) return true;
@@ -497,6 +495,8 @@ namespace uno_flip
                 draw_chain = int.TryParse(numberPart, out draw_chain) ? draw_chain : 1;
                 info = $"chain: {draw_chain}";
                 return false;
+            } if (input == "exit") {
+                Environment.Exit(0);
             }
             // else if (input.StartsWith("/force ")) {
             //     input = input[7..];

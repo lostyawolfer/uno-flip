@@ -10,6 +10,18 @@
             Console.ResetColor();
             Console.ForegroundColor = ConsoleColor.White;
         }
+
+        public static void WritePowerline(string message, ConsoleColor color, char finish = '')
+        {
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.BackgroundColor = color;
+            Console.Write($"{message} ");
+            Console.ResetColor();
+            Console.ForegroundColor = color;
+            Console.Write($"{finish} ");
+            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.White;
+        }
     }
 }
 

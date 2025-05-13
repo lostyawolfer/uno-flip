@@ -24,7 +24,6 @@ jobs:
       - name: Build
         run: make build
     
-
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
