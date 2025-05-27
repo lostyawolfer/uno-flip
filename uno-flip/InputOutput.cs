@@ -104,6 +104,7 @@ namespace uno_flip{
             int color = main_side ? card.main_color : card.reverse_color;
             int value = main_side ? card.main_value : card.reverse_value;
 
+            type = "?";
             switch (color){
                 case 0:
                     type = main_side ? "J" : "j";
@@ -119,9 +120,6 @@ namespace uno_flip{
                     break;
                 case 4:
                     type = main_side ? "♣" : "♧";
-                    break;
-                case _:
-                    type = "?";
                     break;
             }
 
@@ -159,7 +157,7 @@ namespace uno_flip{
                     case 4:
                         true_color = ConsoleColor.Blue;
                         break;
-                    case _:
+                    case 0:
                         true_color = ConsoleColor.White;
                         break;
                 }
@@ -177,7 +175,7 @@ namespace uno_flip{
                     case 4:
                         true_color = ConsoleColor.DarkYellow;
                         break;
-                    case _:
+                    case 0:
                         true_color = ConsoleColor.White;
                         break;
                 }
