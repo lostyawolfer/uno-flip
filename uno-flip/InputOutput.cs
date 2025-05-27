@@ -1,4 +1,6 @@
-﻿namespace input_output
+﻿using System;
+
+namespace input_output
 {
     public static class InputOutput
     {
@@ -102,12 +104,26 @@ namespace uno_flip{
             int color = main_side ? card.main_color : card.reverse_color;
             int value = main_side ? card.main_value : card.reverse_value;
 
-            if (color == 0) type = main_side ? "J" : "j";
-            else if (color == 1) type = main_side ? "♥" : "♡";
-            else if (color == 2) type = main_side ? "♦" : "♢";
-            else if (color == 3) type = main_side ? "♠" : "♤";
-            else type = main_side ? "♣" : "♧";
-
+            switch (color){
+                case 0:
+                    type = main_side ? "J" : "j";
+                    break;
+                case 1:
+                    type = main_side ? "♥" : "♡";
+                    break;
+                case 2:
+                    type = main_side ? "♦" : "♢";
+                    break;
+                case 3:
+                    type = main_side ? "♠" : "♤";
+                    break;
+                case 4:
+                    type = main_side ? "♣" : "♧";
+                    break;
+                case _:
+                    type = "?";
+                    break;
+            }
 
             if (color != 0){
                 if (value > 0) true_value = $"{back}{value}";
@@ -130,18 +146,41 @@ namespace uno_flip{
             if (color == 0) color = render_wilds_as;
 
             if (main_side){
-                if (color == 0) true_color = ConsoleColor.White;    // wild
-                else if (color == 1) true_color = ConsoleColor.Red;
-                else if (color == 2) true_color = ConsoleColor.Yellow;
-                else if (color == 3) true_color = ConsoleColor.Green;
-                else if (color == 4) true_color = ConsoleColor.Blue;
+                switch (color) {
+                    case 1:
+                        true_color = ConsoleColor.Red;
+                        break;
+                    case 2:
+                        true_color = ConsoleColor.Yellow;
+                        break;
+                    case 3:
+                        true_color = ConsoleColor.Green;
+                        break;
+                    case 4:
+                        true_color = ConsoleColor.Blue;
+                        break;
+                    case _:
+                        true_color = ConsoleColor.White;
+                        break;
+                }
             } else {
-                // Console.BackgroundColor = ConsoleColor.White;
-                if (color == 0) true_color = ConsoleColor.Gray;    // wild
-                else if (color == 1) true_color = ConsoleColor.DarkCyan;
-                else if (color == 2) true_color = ConsoleColor.DarkMagenta;
-                else if (color == 3) true_color = ConsoleColor.Magenta;
-                else if (color == 4) true_color = ConsoleColor.DarkYellow;
+                switch (color) {
+                    case 1:
+                        true_color = ConsoleColor.DarkCyan;
+                        break;
+                    case 2:
+                        true_color = ConsoleColor.DarkMagenta;
+                        break;
+                    case 3:
+                        true_color = ConsoleColor.Magenta;
+                        break;
+                    case 4:
+                        true_color = ConsoleColor.DarkYellow;
+                        break;
+                    case _:
+                        true_color = ConsoleColor.White;
+                        break;
+                }
             }
 
 

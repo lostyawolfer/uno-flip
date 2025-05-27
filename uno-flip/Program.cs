@@ -656,7 +656,7 @@ namespace uno_flip
                             }
                             return true;
                         }
-                        info = "  Only +!";
+                        info = $"Only +! ({draw_chain})";
                         return false;
                     }
                 }
