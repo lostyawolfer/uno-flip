@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Diagnostics;
 using System.Threading;
+using Internal;
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
 
 namespace uno_flip
@@ -153,7 +154,7 @@ namespace uno_flip
             input_output.InputOutput.WriteWithColor(
                 "\n\n\tYou are going to play against a robot that's supposed to play aggressively.\n\tIt is artificially slowed down so that you can properly percieve each its move.\n\tIt does not actually take your computer that long to get the move done.", ConsoleColor.Cyan);
             input_output.InputOutput.WriteWithColor(
-                "\n\n\tThe only house rule in this game is 'Stacking', meaning if someone gives you a +1 you can +1 them back, for example.\n\tNo 'Challenging' wild plus cards btw.\n\tHave fun!\n\n\tTo exit the app, type \"exit\" during your move.", ConsoleColor.White);
+                "\n\n\tThe only house rule in this game is 'Stacking', meaning if someone gives you a +1 you can +1 them back, for example.\nAlso can stack +2 on +1 and vice versa. They are counted as the same card type. Even if w+2r was played you can play y+1.\n\tNo 'Challenging' wild plus cards btw.\n\tHave fun!\n\n\tTo exit the app, type \"exit\" or \"q\" during your move.", ConsoleColor.White);
             
             input_output.InputOutput.WriteWithColor("\n\n\n\t\tPress any key to contiune", ConsoleColor.Green);
             Console.ReadKey();
@@ -498,7 +499,8 @@ namespace uno_flip
                 return false;
             }
             
-            if (input == "exit") {
+            if (input == "exit" || input == "q") {
+                Console.Clear();
                 Environment.Exit(0);
             }
             // else if (input.StartsWith("/force ")) {

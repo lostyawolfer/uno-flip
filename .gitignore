@@ -4,3 +4,4 @@
 *obj/
 releases/
 docs/## Modele d'analyse.odt
+*.~lock*
