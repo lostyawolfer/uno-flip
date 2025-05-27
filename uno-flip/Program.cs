@@ -284,7 +284,7 @@ namespace uno_flip
         public static void DrawCards(ref List<int> deck, ref List<int> stack, ref List<int> game_user_cards, ref List<int> game_opponent_cards, ref List<int> game_deck, ref List<int> game_stack, out int took_amount, bool to_end = true, int amount = 1){
             Console.CursorVisible = false;
             took_amount = 0;
-            if (amount < 0) {
+            if (amount < 0) {  // draw until color
                 while ( (GlobalVars.cards[deck[0]].main_color != amount*(-1) && GlobalVars.main_side) ||
                         (GlobalVars.cards[deck[0]].reverse_color != amount*(-1) &&!GlobalVars.main_side) ) {
                     SortDeckBot(ref game_opponent_cards);
@@ -342,6 +342,7 @@ namespace uno_flip
                 deck.RemoveAt(0);
 
                 Console.Clear();
+                //PlayCard(ref game_stack, ref stack, ref skip, stack[0], ref draw_chain);
                 SortDeckBot(ref game_opponent_cards);
                 SortDeck(ref game_user_cards);
                InputOutput.ShowScreen(game_opponent_cards, ref game_deck, ref game_stack, ref game_user_cards);
@@ -431,7 +432,7 @@ namespace uno_flip
                     .ThenByDescending(card => GlobalVars.cards[card].main_value == -1)  // priority to reverse
                     .ThenByDescending(card => GlobalVars.cards[card].main_value == -2)  // priority to skip
                     .ThenByDescending(card => GlobalVars.cards[card].main_value == -3)  // priority to draw
-                    .ThenBy(card => GlobalVars.cards[card].main_value == -4)         // flip last
+                    .ThenBy(card => GlobalVars.cards[card].main_value == -4)            // flip last
                     .ThenBy(card => GlobalVars.cards[card].main_value)                  // sort by value
                     .ToList();
             } else {
@@ -495,7 +496,9 @@ namespace uno_flip
                 draw_chain = int.TryParse(numberPart, out draw_chain) ? draw_chain : 1;
                 info = $"chain: {draw_chain}";
                 return false;
-            } if (input == "exit") {
+            }
+            
+            if (input == "exit") {
                 Environment.Exit(0);
             }
             // else if (input.StartsWith("/force ")) {
@@ -608,7 +611,7 @@ namespace uno_flip
                             }
                             return true;
                         }
-                        info = "This card can't be played. Try again";
+                        info = " Bad card";
                         return false;
                     }
                 } else if (draw_chain > 0) {
@@ -651,13 +654,13 @@ namespace uno_flip
                             }
                             return true;
                         }
-                        info = "Currently chaining; only +. Try again";
+                        info = "  Only +!";
                         return false;
                     }
                 }
             }
 
-            info = "You don't have that card. Try again";
+            info = "  No card";
             return false;
         }
 
